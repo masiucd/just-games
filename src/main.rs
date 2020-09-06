@@ -30,42 +30,46 @@ use std::process;
 //         }
 //     }
 // }
+fn main() {
+    let secret_number = rand::thread_rng().gen_range(1, 101);
+    loop {
+        println!("Please enter a first number: ");
+        let a = read_user_input();
+
+        println!("Please enter a second number: ");
+        let b = read_user_input();
+
+        let result = sum(a, b);
+        println!("{} + {} = {}", a, b, result);
+
+        match result.cmp(&secret_number) {
+            Ordering::Less => println!("to small"),
+            Ordering::Greater => println!("to large"),
+            Ordering::Equal => {
+                println!("correct");
+                break;
+            }
+        }
+    }
+}
 
 fn sum(a: u32, b: u32) -> u32 {
     a + b
 }
 
-fn main() {
-    println!("enter a first number  ");
+fn read_user_input() -> u32 {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
 
-    let mut first_num = String::new();
-    io::stdin().read_line(&mut first_num);
+    let digit: u32;
 
-    let mut a: u32 = 0;
-
-    match first_num.trim().parse() {
-        Ok(val) => a = val,
-        Err(err) => {
-            println!("{} is not a valid number ", a);
-            process::exit(1)
+    match input.trim().parse() {
+        Ok(val) => digit = val,
+        Err(_err) => {
+            println!("Not a valid number!");
+            process::exit(1);
         }
     };
-    println!("enter the second number");
 
-    let mut second_num = String::new();
-    io::stdin().read_line(&mut second_num);
-
-    let mut b: u32 = 0;
-
-    match second_num.trim().parse() {
-        Ok(val) => b = val,
-        Err(err) => {
-            println!("{} is not a valid number ", b);
-            process::exit(1)
-        }
-    }
-
-    let res = sum(a, b);
-
-    println!("result {} + {} = {} ", first_num, second_num, res);
+    digit
 }
