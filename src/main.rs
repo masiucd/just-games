@@ -1,6 +1,7 @@
 use rand::Rng;
 use std::cmp::Ordering;
 use std::io;
+use std::process;
 
 // fn main() {
 //     println!("guess a number");
@@ -40,13 +41,29 @@ fn main() {
     let mut first_num = String::new();
     io::stdin().read_line(&mut first_num);
 
+    let mut a: u32 = 0;
+
+    match first_num.trim().parse() {
+        Ok(val) => a = val,
+        Err(err) => {
+            println!("{} is not a valid number ", a);
+            process::exit(1)
+        }
+    };
     println!("enter the second number");
 
     let mut second_num = String::new();
     io::stdin().read_line(&mut second_num);
 
-    let a: u32 = first_num.trim().parse().expect("NaN number");
-    let b: u32 = second_num.trim().parse().expect("NaN number");
+    let mut b: u32 = 0;
+
+    match second_num.trim().parse() {
+        Ok(val) => b = val,
+        Err(err) => {
+            println!("{} is not a valid number ", b);
+            process::exit(1)
+        }
+    }
 
     let res = sum(a, b);
 
