@@ -73,3 +73,11 @@ fn read_user_input() -> u32 {
 
     digit
 }
+
+fn fac(num: u32) -> u32 {
+    if num <= 2 {
+        num
+    } else {
+        num * fac(num - 1)
+    }
+}
