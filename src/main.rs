@@ -81,3 +81,10 @@ fn fac(num: u32) -> u32 {
         num * fac(num - 1)
     }
 }
+
+fn facWithMatch(num: u32) -> u32 {
+    match num {
+        1 | 2 => num,
+        _ => num * fac(num - 1),
+    }
+}
