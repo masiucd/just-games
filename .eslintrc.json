@@ -4,7 +4,7 @@
     "ecmaVersion": 2020
     // "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint", "react-hooks", "@emotion"],
+  "plugins": ["@typescript-eslint", "react-hooks", "simple-import-sort"],
   "env": {
     "es6": true,
     "browser": true,
@@ -21,11 +21,12 @@
     "react/react-in-jsx-scope": 0,
     "react/display-name": 0,
     "react/prop-types": 0,
+    "sort-imports": [2, {"ignoreDeclarationSort": true, "ignoreCase": true}],
+    "simple-import-sort/imports": 2,
+    "simple-import-sort/exports": 2,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 2,
-    "@emotion/jsx-import": 0,
-    "@emotion/pkg-renaming": 2,
     "react/jsx-filename-extension": [
       1,
       {"extensions": [".js", ".jsx", ".tsx"]}

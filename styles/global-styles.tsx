@@ -1,5 +1,7 @@
 import {css, Global} from '@emotion/react'
 
+export const HEADER_HEIGHT = 10
+export const FOOTER_HEIGHT = 10
 export const GlobalStyles = () => (
   <Global
     styles={css`
@@ -33,9 +35,9 @@ export const GlobalStyles = () => (
         --h3: 1.953rem;
         --h4: 1.563rem;
         --h5: 1.25rem;
-        --maxWidth: 1200px;
-        --header-height: 10rem;
-        --footer-height: 10rem;
+        --maxWidth: 970px;
+        --header-height: ${HEADER_HEIGHT}rem;
+        --footer-height: ${FOOTER_HEIGHT}rem;
 
         /* border-radius */
         --border-radius-s: 3px;
