@@ -1,13 +1,12 @@
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {above} from "@styles/media-query"
-import {colors, elevations} from "@styles/styled-record"
+import {colors, elevations, sizes} from "@styles/styled-record"
 import {motion} from "framer-motion"
 import {createPortal} from "react-dom"
 import routes from "../../data/routes.json"
 import Link from "next/link"
 import SocialList from "./social-list"
-import {toSpans} from "@utils/util"
 import AppTitle from "@components/common/app-title"
 
 const Overlay = styled(motion.div)`
@@ -55,7 +54,22 @@ const Navbar = () => {
       }}
     >
       <nav css={css``}>
-        <AppTitle incomingStyles={css``} />
+        <AppTitle
+          incomingStyles={css`
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -20%);
+            text-align: center;
+            width: 100%;
+            font-size: ${sizes.h3};
+            letter-spacing: 0.2rem;
+            color: ${colors.colorBgBackground};
+            span {
+              text-shadow: 1px 1px ${colors.colorGray200};
+            }
+          `}
+        />
         <List>
           {routes.map(({name, route}) => (
             <motion.li

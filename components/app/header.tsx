@@ -1,5 +1,5 @@
 import {css} from "@emotion/react"
-import {sizes} from "@styles/styled-record"
+import {colors, sizes} from "@styles/styled-record"
 import {above} from "@styles/media-query"
 import {useToggle} from "@hooks/toggle"
 import AnimatedWrapper from "@components/animated-wrapper"
@@ -25,7 +25,42 @@ const Header = () => {
   const [isMenuOpen, toggleMenuIsOpen] = useToggle()
   return (
     <header css={headerStyles}>
-      <AppTitle incomingStyles={css``} />
+      <AppTitle
+        incomingStyles={css`
+          font-size: ${sizes.h3};
+          letter-spacing: 0.2rem;
+          strong {
+            position: relative;
+            &:after {
+              content: "";
+              position: absolute;
+              background-color: ${colors.colorTextPrimary};
+              width: 0;
+              height: 6px;
+              left: 0;
+              bottom: 14px;
+              opacity: 0.4;
+              transition: width 300ms ease-in-out;
+              transform: rotate(-2deg);
+              z-index: -1;
+            }
+            &:hover {
+              &:after {
+                width: 90%;
+              }
+            }
+          }
+          span {
+            &:nth-child(2n) {
+              transform: rotate(12deg);
+              color: ${colors.colorGray700};
+            }
+            &:nth-child(4n) {
+              transform: rotate(-12deg);
+            }
+          }
+        `}
+      />
       <AnimatedWrapper isOn={isMenuOpen}>
         <Navbar />
       </AnimatedWrapper>
