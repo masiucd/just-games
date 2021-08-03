@@ -1,38 +1,53 @@
-import {css} from '@emotion/react'
-import styled from '@emotion/styled'
-import {sizes} from '@styles/styled-record'
-import Navbar from './navbar'
-import cuid from 'cuid'
-import {motion} from 'framer-motion'
+import {css} from "@emotion/react"
+import {sizes} from "@styles/styled-record"
+import {above} from "@styles/media-query"
+import {useToggle} from "@hooks/toggle"
+import AnimatedWrapper from "@components/animated-wrapper"
+import {resetButtonStyles} from "@styles/common"
+import Dynamic from "next/dynamic"
+import AppTitle from "@components/common/app-title"
+const Navbar = Dynamic(() => import("./navbar"))
 
-const toSpans = (input: string) =>
-  input.split('').map((letter) => (
-    <motion.span
-      whileHover={{scale: 1.1, rotateX: 20, rotateY: 30, y: -2}}
-      key={cuid()}
-      css={css`
-        display: inline-block;
-      `}
-    >
-      {letter}
-    </motion.span>
-  ))
-
-const HeaderTitle = styled.div``
+const headerStyles = css`
+  height: ${sizes.headerHeight};
+  border: 2px solid red;
+  padding: 0.2rem 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  position: relative;
+  @media ${above.tablet} {
+    grid-template-columns: 1fr 2fr;
+    align-items: center;
+  }
+`
 
 const Header = () => {
+  const [isMenuOpen, toggleMenuIsOpen] = useToggle()
   return (
-    <header
+    <header css={headerStyles}>
+      <AppTitle incomingStyles={css``} />
+      <AnimatedWrapper isOn={isMenuOpen}>
+        <Navbar />
+      </AnimatedWrapper>
+      <MenuButton onClick={toggleMenuIsOpen} />
+    </header>
+  )
+}
+
+const MenuButton = ({onClick}: {onClick: () => void}) => {
+  return (
+    <button
+      onClick={onClick}
       css={css`
-        height: ${sizes.headerHeight};
+        ${resetButtonStyles};
+        position: absolute;
+        top: 0.5rem;
+        right: 1rem;
+        z-index: 10;
       `}
     >
-      <HeaderTitle>
-        <strong>{toSpans('Just Games')}</strong>
-      </HeaderTitle>
-
-      <Navbar />
-    </header>
+      menu
+    </button>
   )
 }
 

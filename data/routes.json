@@ -1,0 +1,6 @@
+[
+  {"name": "Quiz", "route": "quiz"},
+  {"name": "Hangman", "route": "hangman"},
+  {"name": "Black Jack", "route": "black-jack"},
+  {"name": "Tic Tac Toe", "route": "tic-tac-toe"}
+]
