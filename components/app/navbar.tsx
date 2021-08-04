@@ -43,6 +43,10 @@ const List = styled.ul`
   }
 `
 
+const AuthOptions = styled.aside`
+  /*  */
+`
+
 const Navbar = () => {
   return createPortal(
     <Overlay
@@ -87,6 +91,14 @@ const Navbar = () => {
             </motion.li>
           ))}
         </List>
+        <AuthOptions>
+          <Link href="">
+            <a>Login</a>
+          </Link>
+          <Link href="">
+            <a>Register</a>
+          </Link>
+        </AuthOptions>
         <SocialList
           incomingStyles={css`
             li {
