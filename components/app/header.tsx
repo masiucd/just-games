@@ -2,7 +2,7 @@ import {css} from "@emotion/react"
 import {colors, sizes} from "@styles/styled-record"
 import {above} from "@styles/media-query"
 import {useToggle} from "@hooks/toggle"
-import AnimatedWrapper from "@components/animated-wrapper"
+import AnimatedWrapper from "@components/common/animated-wrapper"
 import {resetButtonStyles} from "@styles/common"
 import Dynamic from "next/dynamic"
 import AppTitle from "@components/common/app-title"
@@ -10,11 +10,11 @@ const Navbar = Dynamic(() => import("./navbar"))
 
 const headerStyles = css`
   height: ${sizes.headerHeight};
-  border: 2px solid red;
   padding: 0.2rem 1.2rem;
   display: grid;
   grid-template-columns: 1fr;
   position: relative;
+  background-color: ${colors.colorGray900};
   @media ${above.tablet} {
     grid-template-columns: 1fr 2fr;
     align-items: center;
@@ -51,12 +51,14 @@ const Header = () => {
             }
           }
           span {
-            &:nth-child(2n) {
-              transform: rotate(12deg);
-              color: ${colors.colorGray700};
+            &:nth-of-type(2n) {
+              color: ${colors.colorGray600};
             }
-            &:nth-child(4n) {
-              transform: rotate(-12deg);
+            &:nth-of-type(5n) {
+              color: ${colors.colorTextPrimary};
+            }
+            &:nth-of-type(4n) {
+              color: ${colors.colorGray400};
             }
           }
         `}
@@ -76,9 +78,10 @@ const MenuButton = ({onClick}: {onClick: () => void}) => {
       css={css`
         ${resetButtonStyles};
         position: absolute;
-        top: 0.5rem;
-        right: 1rem;
+        top: 2.5rem;
+        right: 2rem;
         z-index: 10;
+        width: 5em;
       `}
     >
       menu

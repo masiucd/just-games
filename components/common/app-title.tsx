@@ -8,7 +8,7 @@ export const toSpans = (input: string) =>
   [...input].map((letter) => (
     <motion.span
       className={letter === " " ? "with-white-space" : ""}
-      whileHover={{scale: 2, rotateX: 10, rotateY: 10, zIndex: 2}}
+      whileHover={{scale: 2, rotate: "14deg", zIndex: 2}}
       transition={{damping: 6}}
       key={cuid()}
       css={css`
@@ -36,7 +36,7 @@ const AppTitle = ({incomingStyles}: Props) => {
           margin: 0 0.1rem;
         }
         span {
-          color: ${colors.colorTextText};
+          color: ${colors.colorBgBackground};
         }
       `}
     >

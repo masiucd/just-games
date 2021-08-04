@@ -43,10 +43,6 @@ const List = styled.ul`
   }
 `
 
-const AuthOptions = styled.aside`
-  /*  */
-`
-
 const Navbar = () => {
   return createPortal(
     <Overlay
@@ -57,7 +53,7 @@ const Navbar = () => {
         damping: 3,
       }}
     >
-      <nav css={css``}>
+      <nav>
         <AppTitle
           incomingStyles={css`
             position: absolute;
@@ -66,11 +62,16 @@ const Navbar = () => {
             transform: translate(-50%, -20%);
             text-align: center;
             width: 100%;
-            font-size: ${sizes.h3};
+            font-size: ${sizes.h1};
             letter-spacing: 0.2rem;
             color: ${colors.colorBgBackground};
             span {
-              text-shadow: 1px 1px ${colors.colorGray200};
+              &:nth-of-type(2n) {
+                color: ${colors.colorGray600};
+              }
+              &:nth-of-type(3n) {
+                color: ${colors.colorGray900};
+              }
             }
           `}
         />
@@ -85,25 +86,44 @@ const Navbar = () => {
                 opacity: 0.6,
               }}
             >
-              <Link href={`/game/${route}`}>
+              <Link href={route}>
                 <a>{name}</a>
               </Link>
             </motion.li>
           ))}
+          <motion.li
+            whileHover={{
+              scale: 1.065,
+              rotateX: "24deg",
+              rotateY: "-2deg",
+              opacity: 0.6,
+            }}
+          >
+            <Link href="/login">
+              <a>Login</a>
+            </Link>
+          </motion.li>
+          <motion.li
+            whileHover={{
+              scale: 1.065,
+              rotateX: "24deg",
+              rotateY: "-2deg",
+              opacity: 0.6,
+            }}
+          >
+            <Link href="/register">
+              <a>Register</a>
+            </Link>
+          </motion.li>
         </List>
-        <AuthOptions>
-          <Link href="">
-            <a>Login</a>
-          </Link>
-          <Link href="">
-            <a>Register</a>
-          </Link>
-        </AuthOptions>
+
         <SocialList
           incomingStyles={css`
             li {
               a {
                 color: ${colors.colorBgBackground};
+                display: inline-block;
+                color: ${colors.colorTextText};
               }
             }
           `}
