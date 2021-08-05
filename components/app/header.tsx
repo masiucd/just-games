@@ -1,11 +1,11 @@
-import {css} from "@emotion/react"
-import {colors, sizes} from "@styles/styled-record"
-import {above} from "@styles/media-query"
-import {useToggle} from "@hooks/toggle"
 import AnimatedWrapper from "@components/common/animated-wrapper"
-import {resetButtonStyles} from "@styles/common"
-import Dynamic from "next/dynamic"
 import AppTitle from "@components/common/app-title"
+import {css} from "@emotion/react"
+import {useToggle} from "@hooks/toggle"
+import {resetButtonStyles} from "@styles/common"
+import {above} from "@styles/media-query"
+import {colors, sizes} from "@styles/styled-record"
+import Dynamic from "next/dynamic"
 const Navbar = Dynamic(() => import("./navbar"))
 
 const headerStyles = css`
@@ -15,20 +15,24 @@ const headerStyles = css`
   grid-template-columns: 1fr;
   position: relative;
   background-color: ${colors.colorGray900};
+  align-items: center;
   @media ${above.tablet} {
     grid-template-columns: 1fr 2fr;
-    align-items: center;
   }
 `
 
-const Header = () => {
-  const [isMenuOpen, toggleMenuIsOpen, closeMenu, openMenu] = useToggle()
+const Header = (): JSX.Element => {
+  const [isMenuOpen, toggleMenuIsOpen, closeMenu] = useToggle()
+
   return (
     <header css={headerStyles}>
       <AppTitle
         incomingStyles={css`
-          font-size: ${sizes.h3};
+          font-size: ${sizes.h5};
           letter-spacing: 0.2rem;
+          @media ${above.mobileL} {
+            font-size: ${sizes.h3};
+          }
           strong {
             position: relative;
             &:after {
@@ -71,7 +75,7 @@ const Header = () => {
   )
 }
 
-const MenuButton = ({onClick}: {onClick: () => void}) => (
+const MenuButton = ({onClick}: {onClick: () => void}): JSX.Element => (
   <button
     onClick={onClick}
     css={css`

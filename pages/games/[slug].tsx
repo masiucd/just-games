@@ -1,10 +1,13 @@
+import {TicTacToe} from "@components/tic-tac-toe"
+import fs from "fs"
+import {GetStaticPaths, GetStaticProps} from "next"
 import {useRouter} from "next/dist/client/router"
-// import games from "../../data/games.json"
-// type GameSlug<T extends keyof typeof games> = typeof games
+import {join} from "path"
+import {ParsedUrlQuery} from "querystring"
 
 type GameSlug = "quiz" | "hangman" | "black-jack" | "tic-tac-toe"
 
-const renderGame = (slug: GameSlug) => {
+const renderGame = (slug: GameSlug): JSX.Element => {
   switch (slug) {
     case "quiz":
       return <h1>Quiz</h1>
@@ -13,16 +16,14 @@ const renderGame = (slug: GameSlug) => {
     case "hangman":
       return <h1>Hangman</h1>
     case "tic-tac-toe":
-      return <h1>TicTacToe</h1>
-
+      return <TicTacToe />
     default:
       throw new Error(`No game found with ${slug}`)
   }
 }
 
-const GameSlugPage = () => {
+const GameSlugPage = (): JSX.Element => {
   const {query} = useRouter()
-  console.log("query.slug", query.slug)
   return (
     <div>
       <h1>{query.slug}</h1>
@@ -32,3 +33,33 @@ const GameSlugPage = () => {
 }
 
 export default GameSlugPage
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const postsPath = join(process.cwd(), "posts")
+  const postsSlugs = fs
+    .readdirSync(postsPath, "utf-8")
+    .map((path) => path.replace(/\.mdx$/, ""))
+  return {
+    paths: postsSlugs.map((slug) => ({params: {slug}})),
+    fallback: false,
+  }
+}
+
+interface QueryParams extends ParsedUrlQuery {
+  slug: string
+}
+interface Result {
+  data: any
+}
+
+export const getStaticProps: GetStaticProps<Result, QueryParams> = async ({
+  params,
+}) => {
+  const postSlug = params?.slug + ".mdx"
+
+  return {
+    props: {
+      data: [],
+    },
+  }
+}

@@ -1,11 +1,29 @@
 import PageWrapper from "@components/common/page-wrapper"
 import Title from "@components/common/title"
 import styled from "@emotion/styled"
+import {resetButtonStyles} from "@styles/common"
+import {colors} from "@styles/styled-record"
+import Link from "next/link"
 import {Fragment} from "react"
+const CtaList = styled.ul`
+  padding: 1rem;
+  display: flex;
+  gap: 1rem;
+  a {
+    ${resetButtonStyles};
+    display: inline-block;
+    min-width: 5em;
+    font-size: 1em;
+    text-align: center;
+    transition: 200ms ease-out background-color;
+    &:hover {
+      background-color: ${colors.colorTextPrimary};
+      color: ${colors.colorBgBackground};
+    }
+  }
+`
 
-const CtaList = styled.ul``
-
-export default function Home() {
+export default function Home(): JSX.Element {
   return (
     <Fragment>
       <PageWrapper>
@@ -24,7 +42,17 @@ export default function Home() {
           <p>This is just for fun, and there is only just games</p>
         </Title>
       </PageWrapper>
-      <CtaList></CtaList>
+      <CtaList>
+        <Link href="/games">
+          <a>Games</a>
+        </Link>
+        <Link href="/about">
+          <a>About</a>
+        </Link>
+        <Link href="/contact">
+          <a>Contact</a>
+        </Link>
+      </CtaList>
     </Fragment>
   )
 }

@@ -45,7 +45,7 @@ const GamesPage = ({frontMatters}: Props): JSX.Element => {
 
 export default GamesPage
 
-export const getStaticProps: GetStaticProps = () => {
+export const getStaticProps: GetStaticProps = async () => {
   const postsPath = path.join(process.cwd(), "posts")
   const posts = fs.readdirSync(postsPath)
   const slugs = posts.map((post) => post.replace(/\.mdx$/i, ""))
@@ -65,7 +65,7 @@ export const getStaticProps: GetStaticProps = () => {
 
   // console.log("postsPath", postsPath)
   // console.log("posts", posts)
-  // console.log("slugs", slugs)
+  console.log("slugs", slugs)
 
   return {
     props: {
