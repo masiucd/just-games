@@ -23,7 +23,6 @@
     "react/prop-types": 0,
     "sort-imports": [2, {"ignoreDeclarationSort": true, "ignoreCase": true}],
     "simple-import-sort/imports": 2,
-    "simple-import-sort/exports": 2,
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 2,

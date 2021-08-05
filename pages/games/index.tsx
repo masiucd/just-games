@@ -1,21 +1,32 @@
+import {FrontMatter} from "@app-types/blog"
 import PageWrapper from "@components/common/page-wrapper"
 import Title from "@components/common/title"
+import GameItem from "@components/game-elements/game-item"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
-import Link from "next/link"
+import {above} from "@styles/media-query"
+import fs from "fs"
+import matter from "gray-matter"
+import {GetStaticProps} from "next"
+import path from "path"
 import {Fragment} from "react"
-// TODO: Just for now. this will be fetched through mdx files
-import games from "../../data/games.json"
 
 const GamesList = styled.ul`
-  border: 2px solid red;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  grid-gap: 1em;
+  grid-template-columns: 1fr;
+  @media ${above.tablet} {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  padding: 0.5em;
 `
 
-const GamesPage = () => {
+interface Props {
+  frontMatters: FrontMatter[]
+}
+
+const GamesPage = ({frontMatters}: Props): JSX.Element => {
   return (
     <Fragment>
       <PageWrapper>
@@ -23,8 +34,8 @@ const GamesPage = () => {
           <h1>Games</h1>
         </Title>
         <GamesList>
-          {games.map((game) => (
-            <GameItem key={game.route} game={game} />
+          {frontMatters.map((item) => (
+            <GameItem key={item.slug} frontMatter={item} />
           ))}
         </GamesList>
       </PageWrapper>
@@ -32,28 +43,35 @@ const GamesPage = () => {
   )
 }
 
-interface Props {
-  game: {
-    name: string
-    route: string
+export default GamesPage
+
+export const getStaticProps: GetStaticProps = () => {
+  const postsPath = path.join(process.cwd(), "posts")
+  const posts = fs.readdirSync(postsPath)
+  const slugs = posts.map((post) => post.replace(/\.mdx$/i, ""))
+  const postContentWithFrontMatter = slugs.map((x) => {
+    const fileContent = fs.readFileSync(
+      path.join(postsPath, x + ".mdx"),
+      "utf-8",
+    )
+
+    const {data: frontMatter, content} = matter(fileContent)
+
+    return {
+      frontMatter,
+      content,
+    }
+  })
+
+  // console.log("postsPath", postsPath)
+  // console.log("posts", posts)
+  // console.log("slugs", slugs)
+
+  return {
+    props: {
+      frontMatters: postContentWithFrontMatter.map(
+        ({frontMatter}) => frontMatter,
+      ),
+    },
   }
 }
-function GameItem({game: {name, route}}: Props) {
-  return (
-    <li
-      css={css`
-        margin-bottom: 0.5rem;
-        border: 2px solid red;
-        min-width: 12rem;
-        text-align: center;
-      `}
-    >
-      <h4>{name}</h4>
-      <Link href={`/games/${route}`}>
-        <a>→ {name}</a>
-      </Link>
-    </li>
-  )
-}
-
-export default GamesPage

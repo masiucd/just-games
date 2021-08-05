@@ -1,16 +1,17 @@
+import AppTitle from "@components/common/app-title"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
+import {useClickOutside} from "@hooks/click-outside"
+import {resetButtonStyles} from "@styles/common"
 import {above} from "@styles/media-query"
 import {colors, elevations, sizes} from "@styles/styled-record"
 import {motion} from "framer-motion"
-import {createPortal} from "react-dom"
-import routes from "../../data/routes.json"
 import Link from "next/link"
-import SocialList from "./social-list"
-import AppTitle from "@components/common/app-title"
 import {useRef} from "react"
-import {useClickOutside} from "@hooks/click-outside"
-import {resetButtonStyles} from "@styles/common"
+import {createPortal} from "react-dom"
+
+import routes from "../../data/routes.json"
+import SocialList from "./social-list"
 
 const Overlay = styled(motion.div)`
   position: fixed;
@@ -71,17 +72,22 @@ const SecondHalf = styled(motion.div)`
   background-color: ${colors.colorTextPrimary};
 `
 
+const buttonStyles = css`
+  ${resetButtonStyles};
+  background-color: transparent;
+  border: 2px solid ${colors.colorBgBackground};
+  margin-left: 0.45rem;
+  color: ${colors.colorBgBackground};
+  font-size: 1rem;
+`
+
 const ActionsWrapper = styled.div`
   position: absolute;
   top: 1rem;
-  right: 1rem;
+  left: 1rem;
+
   button {
-    ${resetButtonStyles};
-    background-color: transparent;
-    border: 2px solid ${colors.colorBgBackground};
-    margin-left: 0.45rem;
-    color: ${colors.colorBgBackground};
-    font-size: 1rem;
+    ${buttonStyles};
   }
 `
 
@@ -186,6 +192,34 @@ const Navbar = ({closeMenu}: Props) => {
               Register
             </motion.button>
           </ActionsWrapper>
+
+          <motion.button
+            onClick={closeMenu}
+            whileHover={{
+              backgroundColor: colors.colorGray900,
+              color: colors.colorHighlight,
+            }}
+            css={css`
+              ${buttonStyles};
+              position: absolute;
+              top: -1.3rem;
+              right: -0.2rem;
+              border-radius: 50%;
+              width: 3rem;
+              height: 3rem;
+              background-color: ${colors.colorHighlight};
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 0;
+              margin-left: 0;
+              border: 0;
+              font-size: 0.8rem;
+              font-weight: bold;
+            `}
+          >
+            ⤫
+          </motion.button>
         </SecondHalf>
       </nav>
     </Overlay>,
