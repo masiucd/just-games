@@ -23,9 +23,8 @@ export default function Home() {
           </p>
           <p>This is just for fun, and there is only just games</p>
         </Title>
-
-        <CtaList></CtaList>
       </PageWrapper>
+      <CtaList></CtaList>
     </Fragment>
   )
 }

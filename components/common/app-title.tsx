@@ -25,6 +25,12 @@ interface Props {
 
 const appTitleStyles = css`
   cursor: pointer;
+  span {
+    color: ${colors.colorBgBackground};
+  }
+  .with-white-space {
+    margin: 0 0.1rem;
+  }
 `
 const AppTitle = ({incomingStyles}: Props) => {
   return (
@@ -32,12 +38,6 @@ const AppTitle = ({incomingStyles}: Props) => {
       css={css`
         ${appTitleStyles};
         ${incomingStyles};
-        .with-white-space {
-          margin: 0 0.1rem;
-        }
-        span {
-          color: ${colors.colorBgBackground};
-        }
       `}
     >
       <Link href="/">

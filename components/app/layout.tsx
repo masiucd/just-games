@@ -14,7 +14,7 @@ interface Props {
 const mainStyles = (fluid = false) => {
   const headerAndFooterHeight = HEADER_HEIGHT + FOOTER_HEIGHT
   return css`
-    width: ${fluid ? "100%" : sizes.maxWidth};
+    max-width: ${fluid ? "100vw" : sizes.maxWidth};
     margin: 0 auto;
     min-height: calc(100vh - ${headerAndFooterHeight}rem);
   `

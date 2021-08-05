@@ -1,4 +1,4 @@
-import {css, Global} from '@emotion/react'
+import {css, Global} from "@emotion/react"
 
 export const HEADER_HEIGHT = 10
 export const FOOTER_HEIGHT = 10
@@ -7,11 +7,11 @@ export const GlobalStyles = () => (
     styles={css`
       :root {
         /* fonts */
-        --nanum: 'Nanum Gothic', sans-serif;
-        --padauk: 'Padauk', sans-serif;
+        --nanum: "Nanum Gothic", sans-serif;
+        --padauk: "Padauk", sans-serif;
 
         /* Colors */
-        --color-text-primary: #e53170;
+        --color-text-primary: #7f5af0;
         --color-text-text: #212732;
         --color-text-white: #fff;
         --color-bg-background: hsla(0, 100%, 100%, 1);
@@ -27,7 +27,7 @@ export const GlobalStyles = () => (
         --color-gray-700: #4a5568;
         --color-gray-800: #293448;
         --color-gray-900: #1a202c;
-        --color-react: #d1024b;
+        --color-react: #2cb67d;
 
         /* sizes */
         --h1: 3.052rem;
@@ -81,8 +81,8 @@ export const GlobalStyles = () => (
         background-color: var(--color-bg-background);
       }
 
-      body[data-theme='light'] {
-        --color-text-primary: #e53170;
+      body[data-theme="light"] {
+        --color-text-primary: #7f5af0;
         --color-text-text: #212732;
         --color-text-white: #fff;
         --color-bg-background: hsla(0, 100%, 100%, 1);
@@ -98,7 +98,7 @@ export const GlobalStyles = () => (
         --color-gray-700: #4a5568;
         --color-gray-800: #293448;
         --color-gray-900: #1a202c;
-        --color-react: #d1024b;
+        --color-react: #2cb67d;
 
         /* Elevations */
         --shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -114,7 +114,7 @@ export const GlobalStyles = () => (
         --shadow-3xl: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
         --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
       }
-      body[data-theme='dark'] {
+      body[data-theme="dark"] {
         --color-text-primary: #f55f94;
         --color-text-text: #fff;
         --color-text-white: #fff;

@@ -22,7 +22,7 @@ const headerStyles = css`
 `
 
 const Header = () => {
-  const [isMenuOpen, toggleMenuIsOpen] = useToggle()
+  const [isMenuOpen, toggleMenuIsOpen, closeMenu, openMenu] = useToggle()
   return (
     <header css={headerStyles}>
       <AppTitle
@@ -64,29 +64,26 @@ const Header = () => {
         `}
       />
       <AnimatedWrapper isOn={isMenuOpen}>
-        <Navbar />
+        <Navbar closeMenu={closeMenu} />
       </AnimatedWrapper>
       <MenuButton onClick={toggleMenuIsOpen} />
     </header>
   )
 }
 
-const MenuButton = ({onClick}: {onClick: () => void}) => {
-  return (
-    <button
-      onClick={onClick}
-      css={css`
-        ${resetButtonStyles};
-        position: absolute;
-        top: 2.5rem;
-        right: 2rem;
-        z-index: 10;
-        width: 5em;
-      `}
-    >
-      menu
-    </button>
-  )
-}
+const MenuButton = ({onClick}: {onClick: () => void}) => (
+  <button
+    onClick={onClick}
+    css={css`
+      ${resetButtonStyles};
+      position: absolute;
+      top: 2.5rem;
+      right: 2rem;
+      width: 5em;
+    `}
+  >
+    menu
+  </button>
+)
 
 export default Header
