@@ -1,15 +1,11 @@
-import {FrontMatter} from "@app-types/blog"
+import {Field, GameSlug} from "@app-types/blog"
 import PageWrapper from "@components/common/page-wrapper"
 import Title from "@components/common/title"
 import GameItem from "@components/game-elements/game-item"
-import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {above} from "@styles/media-query"
-import fs from "fs"
-import matter from "gray-matter"
 import {getAllPosts} from "lib/api"
 import {GetStaticProps} from "next"
-import path from "path"
 import {Fragment} from "react"
 
 const GamesList = styled.ul`
@@ -24,10 +20,10 @@ const GamesList = styled.ul`
 `
 
 interface Props {
-  frontMatters: FrontMatter[]
+  posts: Record<Field, string | string[]>[]
 }
 
-const GamesPage = ({frontMatters}: Props): JSX.Element => {
+const GamesPage = ({posts}: Props): JSX.Element => {
   return (
     <Fragment>
       <PageWrapper>
@@ -35,8 +31,8 @@ const GamesPage = ({frontMatters}: Props): JSX.Element => {
           <h1>Games</h1>
         </Title>
         <GamesList>
-          {frontMatters.map((item) => (
-            <GameItem key={item.slug} frontMatter={item} />
+          {posts.map((post) => (
+            <GameItem key={post.slug as GameSlug} post={post} />
           ))}
         </GamesList>
       </PageWrapper>
@@ -47,26 +43,10 @@ const GamesPage = ({frontMatters}: Props): JSX.Element => {
 export default GamesPage
 
 export const getStaticProps: GetStaticProps = async () => {
-  const postsPath = path.join(process.cwd(), "posts")
-  const posts = fs.readdirSync(postsPath)
-
-  const postContentWithFrontMatter = posts.map((x) => {
-    const fileContent = fs.readFileSync(path.join(postsPath, x), "utf-8")
-    const {data: frontMatter, content} = matter(fileContent)
-
-    return {
-      frontMatter,
-      content,
-    }
-  })
-
-  console.log("getAllPosts()", getAllPosts(["spoiler"], "DESC"))
-
+  const posts = getAllPosts(["slug", "title"], "DESC")
   return {
     props: {
-      frontMatters: postContentWithFrontMatter.map(
-        ({frontMatter}) => frontMatter,
-      ),
+      posts,
     },
   }
 }

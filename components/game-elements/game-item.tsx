@@ -1,14 +1,14 @@
-import {FrontMatter} from "@app-types/blog"
+import {Field} from "@app-types/blog"
 import {css} from "@emotion/react"
 import {borderRadius, elevations} from "@styles/styled-record"
 import Link from "next/link"
 import {FC} from "react"
 
 interface Props {
-  frontMatter: FrontMatter
+  post: Record<Field, string | string[]>
 }
-const GameItem: FC<Props> = ({frontMatter}) => {
-  const {title, slug} = frontMatter
+const GameItem: FC<Props> = ({post}) => {
+  const {title, slug} = post
   return (
     <li
       css={css`

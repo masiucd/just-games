@@ -4,7 +4,7 @@ import matter from "gray-matter"
 import {join} from "path"
 
 const postPath = join(process.cwd(), "posts")
-const getPostsSlugs = () => fs.readdirSync(postPath)
+const getPostsSlugs = (): string[] => fs.readdirSync(postPath)
 
 export const getPostBySlug = (
   slug: string,
@@ -19,7 +19,7 @@ export const getPostBySlug = (
 
   const {data: frontMatter, content} = matter(postContent)
 
-  const postItem: Record<Field, string | string[]> = {}
+  const postItem: Record<Field | string, string | string[]> = {}
   for (const field of fields) {
     if (field === "slug") {
       postItem[field] = urlQuerySlug
