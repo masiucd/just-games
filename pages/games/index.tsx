@@ -7,6 +7,7 @@ import styled from "@emotion/styled"
 import {above} from "@styles/media-query"
 import fs from "fs"
 import matter from "gray-matter"
+import {getAllPosts} from "lib/api"
 import {GetStaticProps} from "next"
 import path from "path"
 import {Fragment} from "react"
@@ -48,13 +49,9 @@ export default GamesPage
 export const getStaticProps: GetStaticProps = async () => {
   const postsPath = path.join(process.cwd(), "posts")
   const posts = fs.readdirSync(postsPath)
-  const slugs = posts.map((post) => post.replace(/\.mdx$/i, ""))
-  const postContentWithFrontMatter = slugs.map((x) => {
-    const fileContent = fs.readFileSync(
-      path.join(postsPath, x + ".mdx"),
-      "utf-8",
-    )
 
+  const postContentWithFrontMatter = posts.map((x) => {
+    const fileContent = fs.readFileSync(path.join(postsPath, x), "utf-8")
     const {data: frontMatter, content} = matter(fileContent)
 
     return {
@@ -63,9 +60,7 @@ export const getStaticProps: GetStaticProps = async () => {
     }
   })
 
-  // console.log("postsPath", postsPath)
-  // console.log("posts", posts)
-  console.log("slugs", slugs)
+  console.log("getAllPosts()", getAllPosts(["spoiler"], "DESC"))
 
   return {
     props: {

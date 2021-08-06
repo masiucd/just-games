@@ -22,7 +22,7 @@ export type GameSlug = "quiz" | "hangman" | "black-jack" | "tic-tac-toe"
 
 // export type Fields = keyof FrontMatter
 // TODO: Fix type to be dynamic
-export type Fields =
+export type Field =
   | "date"
   | "keywords"
   | "slug"
@@ -31,3 +31,5 @@ export type Fields =
   | "title"
   | "updated"
   | "content"
+
+export type SortDir = "DESC" | "ASC"

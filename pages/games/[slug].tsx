@@ -1,4 +1,4 @@
-import {GameSlug} from "@app-types/blog"
+import {Field, GameSlug} from "@app-types/blog"
 import {TicTacToe} from "@components/tic-tac-toe"
 import fs from "fs"
 import {getPostBySlug} from "lib/api"
@@ -23,7 +23,7 @@ const renderGame = (slug: GameSlug): JSX.Element => {
 }
 
 interface Result {
-  postItem: Record<string, string | string[]>
+  postItem: Record<Field, string | string[]>
 }
 
 const GameSlugPage: FC<Result> = ({postItem}): JSX.Element => {
