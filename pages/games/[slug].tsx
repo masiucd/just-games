@@ -1,11 +1,11 @@
+import {GameSlug} from "@app-types/blog"
 import {TicTacToe} from "@components/tic-tac-toe"
 import fs from "fs"
+import {getPostBySlug} from "lib/api"
 import {GetStaticPaths, GetStaticProps} from "next"
-import {useRouter} from "next/dist/client/router"
 import {join} from "path"
 import {ParsedUrlQuery} from "querystring"
-
-type GameSlug = "quiz" | "hangman" | "black-jack" | "tic-tac-toe"
+import {FC} from "react"
 
 const renderGame = (slug: GameSlug): JSX.Element => {
   switch (slug) {
@@ -22,12 +22,15 @@ const renderGame = (slug: GameSlug): JSX.Element => {
   }
 }
 
-const GameSlugPage = (): JSX.Element => {
-  const {query} = useRouter()
+interface Result {
+  postItem: Record<string, string | string[]>
+}
+
+const GameSlugPage: FC<Result> = ({postItem}): JSX.Element => {
   return (
     <div>
-      <h1>{query.slug}</h1>
-      {renderGame(query.slug as GameSlug)}
+      <h1>{postItem.title}</h1>
+      {renderGame(postItem.slug as GameSlug)}
     </div>
   )
 }
@@ -48,18 +51,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
 interface QueryParams extends ParsedUrlQuery {
   slug: string
 }
-interface Result {
-  data: any
-}
 
 export const getStaticProps: GetStaticProps<Result, QueryParams> = async ({
   params,
 }) => {
   const postSlug = params?.slug + ".mdx"
+  const postItem = getPostBySlug(postSlug, ["slug", "content", "tags", "title"])
 
   return {
     props: {
-      data: [],
+      postItem,
     },
   }
 }
