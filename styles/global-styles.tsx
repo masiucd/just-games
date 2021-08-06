@@ -1,7 +1,7 @@
 import {css, Global} from "@emotion/react"
 
-export const HEADER_HEIGHT = 10
-export const FOOTER_HEIGHT = 10
+export const HEADER_HEIGHT = 5
+export const FOOTER_HEIGHT = 5
 export const GlobalStyles = () => (
   <Global
     styles={css`

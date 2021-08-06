@@ -1,11 +1,13 @@
 import {Field, GameSlug} from "@app-types/blog"
+import Title from "@components/common/title"
 import {TicTacToe} from "@components/tic-tac-toe"
+import {css} from "@emotion/react"
 import fs from "fs"
 import {getPostBySlug} from "lib/api"
 import {GetStaticPaths, GetStaticProps} from "next"
 import {join} from "path"
 import {ParsedUrlQuery} from "querystring"
-import {FC} from "react"
+import {FC, Fragment} from "react"
 
 const renderGame = (slug: GameSlug): JSX.Element => {
   switch (slug) {
@@ -28,10 +30,17 @@ interface Result {
 
 const GameSlugPage: FC<Result> = ({postItem}): JSX.Element => {
   return (
-    <div>
-      <h1>{postItem.title}</h1>
+    <Fragment>
+      <Title
+        incomingStyles={css`
+          text-align: center;
+          margin-bottom: 1.5rem;
+        `}
+      >
+        <h1>{postItem.title}</h1>
+      </Title>
       {renderGame(postItem.slug as GameSlug)}
-    </div>
+    </Fragment>
   )
 }
 

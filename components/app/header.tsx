@@ -81,9 +81,10 @@ const MenuButton = ({onClick}: {onClick: () => void}): JSX.Element => (
     css={css`
       ${resetButtonStyles};
       position: absolute;
-      top: 2.5rem;
+      top: 1.2rem;
       right: 2rem;
-      width: 5em;
+      width: 4em;
+      font-size: 1rem;
     `}
   >
     menu
