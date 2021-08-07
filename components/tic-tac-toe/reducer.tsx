@@ -1,5 +1,7 @@
 import {Action, State} from "./types"
 
+export const setAmountOfGameSets = (amount = 3) => amount
+
 export function reducer(state: State, action: Action) {
   switch (action.type) {
     case "SET_SQUARE":
@@ -52,7 +54,7 @@ export function reducer(state: State, action: Action) {
         winner: null,
         gameState: action.newGameState,
         gameSet: 0,
-        amountOfGameSets: 5,
+        amountOfGameSets: setAmountOfGameSets(action.gameSets),
         finalWinner: null,
         score: {
           oScore: 0,

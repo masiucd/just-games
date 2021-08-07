@@ -1,4 +1,4 @@
-import {css} from "@emotion/react"
+import {css, SerializedStyles} from "@emotion/react"
 
 import {borderRadius, colors, elevations} from "./styled-record"
 
@@ -12,18 +12,37 @@ export const resetButtonStyles = css`
   outline: none;
   font-size: 1.1rem;
   border-radius: ${borderRadius.borderRadiusM};
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
 `
 
-interface FlexColProps {
+interface FlexProps {
   alignItems?: string
   justifyContent?: string
+  incomingStyles?: SerializedStyles
 }
+
 export const flexColumn = ({
   alignItems = "center",
   justifyContent = "center",
-}: FlexColProps = {}) => css`
+  incomingStyles = undefined,
+}: FlexProps = {}) => css`
   display: flex;
   flex-flow: column wrap;
   align-items: ${alignItems};
   justify-content: ${justifyContent};
+  ${incomingStyles};
+`
+export const flexRow = ({
+  alignItems = "center",
+  justifyContent = "center",
+  incomingStyles = undefined,
+}: FlexProps = {}) => css`
+  display: flex;
+  flex-flow: row wrap;
+  align-items: ${alignItems};
+  justify-content: ${justifyContent};
+  ${incomingStyles};
 `

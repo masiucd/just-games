@@ -12,6 +12,8 @@ interface Props {
   winner: string | null
   dispatch: Dispatch<Action>
   gameSet: number
+  isFinalState: boolean
+  amountOfGameSets?: number
 }
 
 const ButtonWrapper = styled.div`
@@ -25,58 +27,65 @@ const ButtonWrapper = styled.div`
   }
 `
 
-const WinningMessage: React.FC<Props> = ({winner, dispatch, gameSet}) => {
-  return (
-    <AnimatedWrapper isOn={winner !== null}>
-      <motion.section
-        layout
-        initial={{opacity: 0.75}}
-        animate={{opacity: 1}}
-        exit={{opacity: 0}}
+const WinningMessage: React.FC<Props> = ({
+  winner,
+  dispatch,
+  gameSet,
+  isFinalState,
+  amountOfGameSets = 3,
+}) => (
+  <AnimatedWrapper isOn={winner !== null}>
+    <motion.section
+      layout
+      initial={{opacity: 0.75}}
+      animate={{opacity: 1}}
+      exit={{opacity: 0}}
+      css={css`
+        background-color: ${colors.colorBgOverlay};
+        ${flexColumn()};
+        min-height: 4rem;
+        margin: 1.3rem auto;
+      `}
+    >
+      <strong
         css={css`
-          background-color: ${colors.colorBgOverlay};
-          ${flexColumn()};
-          min-height: 4rem;
-          margin: 1.3rem auto;
+          font-size: 2rem;
+          span {
+            color: ${colors.colorTextPrimary};
+            border-bottom: 2px solid ${colors.colorHighlight};
+          }
         `}
       >
-        <strong
-          css={css`
-            font-size: 2rem;
-            span {
-              color: ${colors.colorTextPrimary};
-              border-bottom: 2px solid ${colors.colorHighlight};
-            }
-          `}
+        winner is <span>{winner}</span>
+      </strong>
+      <ButtonWrapper>
+        <button
+          disabled={isFinalState}
+          onClick={() => {
+            const prevGameSet = gameSet
+            dispatch({
+              type: "NEW_ROUND",
+              newGameState: "idle",
+              newGameSet: prevGameSet + 1,
+            })
+          }}
         >
-          winner is <span>{winner}</span>
-        </strong>
-        <ButtonWrapper>
-          <button
-            onClick={() => {
-              const prevGameSet = gameSet
-              dispatch({
-                type: "NEW_ROUND",
-                newGameState: "idle",
-                newGameSet: prevGameSet + 1,
-              })
-            }}
-          >
-            New round
-          </button>
-          <button
-            onClick={() => {
-              dispatch({
-                type: "RESET_GAME",
-                newGameState: "idle",
-              })
-            }}
-          >
-            New game
-          </button>
-        </ButtonWrapper>
-      </motion.section>
-    </AnimatedWrapper>
-  )
-}
+          New round
+        </button>
+        <button
+          onClick={() => {
+            dispatch({
+              type: "RESET_GAME",
+              newGameState: "idle",
+              gameSets: amountOfGameSets,
+            })
+          }}
+        >
+          New game
+        </button>
+      </ButtonWrapper>
+    </motion.section>
+  </AnimatedWrapper>
+)
+
 export default WinningMessage

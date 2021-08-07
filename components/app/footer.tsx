@@ -10,7 +10,7 @@ const footerStyles = css`
 const Footer = () => {
   return (
     <footer css={footerStyles}>
-      <h1>footer</h1>
+      <p></p>
     </footer>
   )
 }
