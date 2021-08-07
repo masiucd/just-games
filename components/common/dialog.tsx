@@ -24,9 +24,9 @@ const DialogWrapper = styled(motion.div)`
 `
 
 const variants = {
-  initial: {opacity: 0.5},
-  animate: {opacity: 1},
-  exit: {opacity: 0.5},
+  initial: {opacity: 0.5, scale: 0.65, y: -1000},
+  animate: {opacity: 1, scale: 1, y: 0},
+  exit: {opacity: 0.35, scale: 0.85, y: -1000},
 }
 
 const Dialog: React.FC<Props> = ({children, isOpen, incomingStyles}) => {
@@ -39,6 +39,10 @@ const Dialog: React.FC<Props> = ({children, isOpen, incomingStyles}) => {
             animate="animate"
             exit="exit"
             variants={variants}
+            transition={{
+              delay: 0.15,
+              type: "tween",
+            }}
             css={css`
               ${incomingStyles};
             `}

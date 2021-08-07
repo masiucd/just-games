@@ -4,6 +4,7 @@ import {
   NEW_ROUND,
   OPEN_OPTIONS_DIALOG,
   RESET_GAME,
+  SET_AMOUNT_OF_GAME_SET,
   SET_FINAL_WINNER,
   SET_SQUARE,
   SET_WINNING_SYMBOL,
@@ -65,6 +66,12 @@ export function reducer(state: State, action: Action) {
       return {
         ...state,
         isOptionsDialogOpen: false,
+      }
+
+    case SET_AMOUNT_OF_GAME_SET:
+      return {
+        ...state,
+        amountOfGameSets: action.gameSet,
       }
     case RESET_GAME:
       return {

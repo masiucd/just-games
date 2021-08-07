@@ -7,6 +7,7 @@ export const RESET_GAME = "RESET_GAME"
 export const SET_FINAL_WINNER = "SET_FINAL_WINNER"
 export const OPEN_OPTIONS_DIALOG = "OPEN_OPTIONS_DIALOG"
 export const CLOSE_OPTIONS_DIALOG = "CLOSE_OPTIONS_DIALOG"
+export const SET_AMOUNT_OF_GAME_SET = "SET_AMOUNT_OF_GAME_SET"
 
 export interface State {
   squares: Array<null | string>
@@ -31,5 +32,6 @@ export type Action =
   | {type: "SET_FINAL_WINNER"; newGameState: GameState; winningSymbol: string}
   | {type: "OPEN_OPTIONS_DIALOG"}
   | {type: "CLOSE_OPTIONS_DIALOG"}
+  | {type: "SET_AMOUNT_OF_GAME_SET"; gameSet: number}
 
 export type Dispatch = (action: Action) => void

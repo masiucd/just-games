@@ -6,14 +6,17 @@ import {Dispatch, State} from "./types"
 const TicTacToeState = createContext<State | undefined>(undefined)
 const TicTacToeDispatch = createContext<Dispatch | undefined>(undefined)
 
-const TicToeProvider: FC = ({children}) => {
+interface Props {
+  amountOfGameSets?: number
+}
+const TicToeProvider: FC<Props> = ({children, amountOfGameSets = 3}) => {
   const [state, dispatch] = useReducer(reducer, {
     squares: Array(9).fill(null),
     isX: false,
     winner: null,
     gameState: "idle",
-    gameSet: 0,
-    amountOfGameSets: 3,
+    gameSet: 1,
+    amountOfGameSets,
     finalWinner: null,
     isOptionsDialogOpen: false,
     score: {
