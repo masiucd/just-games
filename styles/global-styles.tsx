@@ -17,6 +17,7 @@ export const GlobalStyles = () => (
         --color-bg-background: hsla(0, 100%, 100%, 1);
         --color-bg-navigation: hsla(0, 0%, 100%, 0.9);
         --color-bg-overlay: hsla(0, 0%, 100%, 0.8);
+        --color-bg-overlay-2: hsla(219, 50%, 10%, 0.8);
         --color-bg-black: #0e182a;
         --color-gray-100: #f0f2f7;
         --color-gray-200: #e2e7ed;
@@ -88,6 +89,7 @@ export const GlobalStyles = () => (
         --color-bg-background: hsla(0, 100%, 100%, 1);
         --color-bg-navigation: hsla(0, 0%, 100%, 0.9);
         --color-bg-overlay: hsla(0, 0%, 100%, 0.8);
+        --color-bg-overlay-2: hsla(219, 50%, 10%, 0.8);
         --color-bg-black: #0e182a;
         --color-gray-100: #f0f2f7;
         --color-gray-200: #e2e7ed;
@@ -121,6 +123,7 @@ export const GlobalStyles = () => (
         --color-bg-background: hsla(219, 50%, 11%, 1);
         --color-bg-navigation: hsla(219, 50%, 11%, 0.9);
         --color-bg-overlay: hsla(219, 50%, 11%, 0.8);
+        --color-bg-overlay-2: hsla(0, 0%, 100%, 0.8);
         --color-bg-black: #0e182a;
         --color-gray-100: #132035;
         --color-gray-200: #222f44;

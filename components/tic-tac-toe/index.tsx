@@ -1,13 +1,12 @@
-import AnimatedWrapper from "@components/common/animated-wrapper"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations, sizes} from "@styles/styled-record"
 import {checkWinner} from "@utils/check-winner"
 import cuid from "cuid"
-import {Fragment, useEffect, useReducer} from "react"
+import {Fragment, useEffect} from "react"
 
-import {reducer} from "./reducer"
+import {useTicTacToeDispatch, useTicTacToeState} from "./context"
 import Square from "./square"
 import WinningMessage from "./winning-message"
 
@@ -55,78 +54,60 @@ const ScoreDisplay = styled.div`
 `
 
 export const TicTacToe = (): JSX.Element => {
-  const [state, dispatch] = useReducer(reducer, {
-    squares: Array(9).fill(null),
-    isX: false,
-    winner: null,
-    gameState: "idle",
-    gameSet: 0,
-    amountOfGameSets: 3,
-    finalWinner: null,
-    score: {
-      oScore: 0,
-      xScore: 0,
-    },
-  })
-  const winningSymbol = checkWinner(state.squares)
+  const {squares, winner, isX, gameState, score, amountOfGameSets, gameSet} =
+    useTicTacToeState()
+  const dispatch = useTicTacToeDispatch()
 
+  const winningSymbol = checkWinner(squares)
   const handleClick = (index: number): void => {
-    if (state.squares[index] || state.winner) {
+    if (squares[index] || winner) {
       return
     }
-    const newSquares = [...state.squares]
-    newSquares[index] = state.isX ? "X" : "O"
+    const newSquares = [...squares]
+    newSquares[index] = isX ? "X" : "O"
     dispatch({type: "SET_SQUARE", newSquares})
   }
 
   useEffect(() => {
-    if (winningSymbol !== null && state.gameState === "idle") {
+    if (winningSymbol !== null && gameState === "idle") {
       dispatch({
         type: "SET_WINNING_SYMBOL",
         winningSymbol,
         newGameState: "game-over",
       })
     }
-  }, [state.gameState, winningSymbol])
+  }, [dispatch, gameState, winningSymbol])
 
   useEffect(() => {
     const isWinner = winningSymbol !== null
-    const isOTheWinner = state.score.oScore === state.amountOfGameSets
-    const isXTheWinner = state.score.xScore === state.amountOfGameSets
+    const isOTheWinner = score.oScore === amountOfGameSets
+    const isXTheWinner = score.xScore === amountOfGameSets
     if ((isOTheWinner || isXTheWinner) && isWinner) {
       dispatch({type: "SET_FINAL_WINNER", newGameState: "final", winningSymbol})
     }
-  }, [
-    state.amountOfGameSets,
-    state.score.oScore,
-    state.score.xScore,
-    winningSymbol,
-  ])
+  }, [amountOfGameSets, dispatch, score.oScore, score.xScore, winningSymbol])
 
   return (
     <Fragment>
       <WinningMessage
-        winner={state.winner}
-        isFinalState={state.gameState === "final"}
+        winner={winner}
+        isFinalState={gameState === "final"}
         dispatch={dispatch}
-        gameSet={state.gameSet}
+        gameSet={gameSet}
       />
-      <AnimatedWrapper isOn={state.gameState === "final"}>
-        <h1>Final winner is {state.finalWinner}</h1>
-      </AnimatedWrapper>
       <ScoreDisplay>
         <p>
-          O Score: <mark>{state.score.oScore}</mark>
+          O Score: <mark>{score.oScore}</mark>
         </p>
         <p>
-          Set: {state.gameSet}/{state.amountOfGameSets}{" "}
+          Set: {gameSet}/{amountOfGameSets}{" "}
         </p>
         <p>
-          X Score: <mark>{state.score.xScore}</mark>
+          X Score: <mark>{score.xScore}</mark>
         </p>
       </ScoreDisplay>
       <Grid>
-        {state.squares.map((square: string | null, index: number) => (
+        {squares.map((square: string | null, index: number) => (
           <Square
             key={cuid()}
             handleClick={handleClick}
@@ -143,6 +124,11 @@ export const TicTacToe = (): JSX.Element => {
           left: 2rem;
           bottom: 8rem;
         `}
+        onClick={() => {
+          dispatch({
+            type: "OPEN_OPTIONS_DIALOG",
+          })
+        }}
       >
         Options
       </button>

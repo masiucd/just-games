@@ -1,6 +1,7 @@
 import {Field, GameSlug} from "@app-types/blog"
 import Title from "@components/common/title"
 import {TicTacToe} from "@components/tic-tac-toe"
+import TicToeProvider from "@components/tic-tac-toe/context"
 import {css} from "@emotion/react"
 import fs from "fs"
 import {getPostBySlug} from "lib/api"
@@ -18,7 +19,12 @@ const renderGame = (slug: GameSlug): JSX.Element => {
     case "hangman":
       return <h1>Hangman</h1>
     case "tic-tac-toe":
-      return <TicTacToe />
+      return (
+        <TicToeProvider>
+          <TicTacToe />
+        </TicToeProvider>
+      )
+
     default:
       throw new Error(`No game found with ${slug}`)
   }

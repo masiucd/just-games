@@ -1,17 +1,27 @@
-import {Action, State} from "./types"
+import {
+  Action,
+  CLOSE_OPTIONS_DIALOG,
+  NEW_ROUND,
+  OPEN_OPTIONS_DIALOG,
+  RESET_GAME,
+  SET_FINAL_WINNER,
+  SET_SQUARE,
+  SET_WINNING_SYMBOL,
+  State,
+} from "./types"
 
 export const setAmountOfGameSets = (amount = 3) => amount
 
 export function reducer(state: State, action: Action) {
   switch (action.type) {
-    case "SET_SQUARE":
+    case SET_SQUARE:
       return {
         ...state,
         isX: !state.isX,
         squares: action.newSquares,
       }
 
-    case "SET_WINNING_SYMBOL":
+    case SET_WINNING_SYMBOL:
       return {
         ...state,
         winner: action.winningSymbol,
@@ -29,7 +39,7 @@ export function reducer(state: State, action: Action) {
         },
       }
 
-    case "NEW_ROUND":
+    case NEW_ROUND:
       return {
         ...state,
         squares: Array(9).fill(null),
@@ -39,14 +49,24 @@ export function reducer(state: State, action: Action) {
         gameSet: action.newGameSet,
       }
 
-    case "SET_FINAL_WINNER":
+    case SET_FINAL_WINNER:
       return {
         ...state,
         finalWinner: action.winningSymbol,
         gameState: action.newGameState,
       }
 
-    case "RESET_GAME":
+    case OPEN_OPTIONS_DIALOG:
+      return {
+        ...state,
+        isOptionsDialogOpen: true,
+      }
+    case CLOSE_OPTIONS_DIALOG:
+      return {
+        ...state,
+        isOptionsDialogOpen: false,
+      }
+    case RESET_GAME:
       return {
         ...state,
         squares: Array(9).fill(null),
