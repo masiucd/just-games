@@ -4,17 +4,9 @@ import styled from "@emotion/styled"
 import {flexColumn, resetButtonStyles} from "@styles/common"
 import {colors} from "@styles/styled-record"
 import {motion} from "framer-motion"
-import React, {Dispatch} from "react"
+import {FC} from "react"
 
-import {Action} from "./types"
-
-interface Props {
-  winner: string | null
-  dispatch: Dispatch<Action>
-  gameSet: number
-  isFinalState: boolean
-  amountOfGameSets?: number
-}
+import {useTicTacToeDispatch, useTicTacToeState} from "./context"
 
 const ButtonWrapper = styled.div`
   min-width: 12rem;
@@ -27,65 +19,64 @@ const ButtonWrapper = styled.div`
   }
 `
 
-const WinningMessage: React.FC<Props> = ({
-  winner,
-  dispatch,
-  gameSet,
-  isFinalState,
-  amountOfGameSets = 3,
-}) => (
-  <AnimatedWrapper isOn={winner !== null}>
-    <motion.section
-      layout
-      initial={{opacity: 0.75}}
-      animate={{opacity: 1}}
-      exit={{opacity: 0}}
-      css={css`
-        background-color: ${colors.colorBgOverlay};
-        ${flexColumn()};
-        min-height: 4rem;
-        margin: 1.3rem auto;
-      `}
-    >
-      <strong
+const WinningMessage: FC = () => {
+  const {winner, amountOfGameSets, gameSet, gameState} = useTicTacToeState()
+  const dispatch = useTicTacToeDispatch()
+  const isFinalState = gameState === "final"
+  return (
+    <AnimatedWrapper isOn={winner !== null}>
+      <motion.section
+        layout
+        initial={{opacity: 0.75}}
+        animate={{opacity: 1}}
+        exit={{opacity: 0}}
         css={css`
-          font-size: 2rem;
-          span {
-            color: ${colors.colorTextPrimary};
-            border-bottom: 2px solid ${colors.colorHighlight};
-          }
+          background-color: ${colors.colorBgOverlay};
+          ${flexColumn()};
+          min-height: 4rem;
+          margin: 1.3rem auto;
         `}
       >
-        winner is <span>{winner}</span>
-      </strong>
-      <ButtonWrapper>
-        <button
-          disabled={isFinalState}
-          onClick={() => {
-            const prevGameSet = gameSet
-            dispatch({
-              type: "NEW_ROUND",
-              newGameState: "idle",
-              newGameSet: prevGameSet + 1,
-            })
-          }}
+        <strong
+          css={css`
+            font-size: 2rem;
+            span {
+              color: ${colors.colorTextPrimary};
+              border-bottom: 2px solid ${colors.colorHighlight};
+            }
+          `}
         >
-          New round
-        </button>
-        <button
-          onClick={() => {
-            dispatch({
-              type: "RESET_GAME",
-              newGameState: "idle",
-              gameSets: amountOfGameSets,
-            })
-          }}
-        >
-          New game
-        </button>
-      </ButtonWrapper>
-    </motion.section>
-  </AnimatedWrapper>
-)
+          winner is <span>{winner}</span>
+        </strong>
+        <ButtonWrapper>
+          <button
+            disabled={isFinalState}
+            onClick={() => {
+              const prevGameSet = gameSet
+              dispatch({
+                type: "NEW_ROUND",
+                newGameState: "idle",
+                newGameSet: prevGameSet + 1,
+              })
+            }}
+          >
+            New round
+          </button>
+          <button
+            onClick={() => {
+              dispatch({
+                type: "RESET_GAME",
+                newGameState: "idle",
+                gameSets: amountOfGameSets,
+              })
+            }}
+          >
+            New game
+          </button>
+        </ButtonWrapper>
+      </motion.section>
+    </AnimatedWrapper>
+  )
+}
 
 export default WinningMessage

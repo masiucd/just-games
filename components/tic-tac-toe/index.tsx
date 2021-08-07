@@ -4,11 +4,14 @@ import {flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations, sizes} from "@styles/styled-record"
 import {checkWinner} from "@utils/check-winner"
 import cuid from "cuid"
+import Dynamic from "next/dynamic"
 import {Fragment, useEffect} from "react"
 
 import {useTicTacToeDispatch, useTicTacToeState} from "./context"
 import Square from "./square"
 import WinningMessage from "./winning-message"
+
+const OptionsDialog = Dynamic(() => import("./options-dialog"))
 
 const GRID_WIDTH = 45
 const Grid = styled.section`
@@ -86,15 +89,11 @@ export const TicTacToe = (): JSX.Element => {
       dispatch({type: "SET_FINAL_WINNER", newGameState: "final", winningSymbol})
     }
   }, [amountOfGameSets, dispatch, score.oScore, score.xScore, winningSymbol])
-
   return (
     <Fragment>
-      <WinningMessage
-        winner={winner}
-        isFinalState={gameState === "final"}
-        dispatch={dispatch}
-        gameSet={gameSet}
-      />
+      <div id="options" />
+      <OptionsDialog />
+      <WinningMessage />
       <ScoreDisplay>
         <p>
           O Score: <mark>{score.oScore}</mark>
