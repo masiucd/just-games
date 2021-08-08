@@ -6,11 +6,6 @@ import {alphabet} from "@utils/helpers"
 import cuid from "cuid"
 import {useState} from "react"
 
-const word = "hello world"
-const fn = (s: string) => {
-  return [...s].map((x) => x)
-}
-
 const LettersWrapper = styled.section`
   ${flexRow()};
   border: 2px solid red;
@@ -31,21 +26,27 @@ const LetterButton = styled.button`
     color: ${colors.colorBgBackground};
   }
 `
+// const word = "hello world"
+// const wordXS = ["h", "e", "l", "l", "o", " ", "w", "o", "r", "d"]
+const word = ["l", "o", "l"]
 
 const Hangman = () => {
-  const [selectedLetter, setSelectedLetter] = useState<string>("")
-  let xs = fn(word)
-  const list = xs.map((x) => x.replace(x, "_"))
-  list[2] = "L"
-  list[4] = "L"
-  list[4] = selectedLetter
-  console.log("list", list)
+  const [wrongWords, setWrongWords] = useState<Array<string>>([])
+  const [playingWord, setPlayingWord] = useState(word)
+  const [selectedWords, setSelectedWords] = useState<Array<string>>(() =>
+    Array(word.length).fill("_"),
+  )
+
+  const [tries, setTries] = useState<number>(0)
+
+  console.log("playingWord", playingWord)
+  console.log("selectedWords", selectedWords)
 
   return (
     <div>
       <h1>Hangman</h1>
 
-      {list.map((x) => (
+      {selectedWords.map((x) => (
         <span
           key={cuid()}
           css={css`
@@ -57,12 +58,39 @@ const Hangman = () => {
         </span>
       ))}
 
+      {wrongWords.map((word) => (
+        <span key={word}>{word}</span>
+      ))}
+
       <LettersWrapper>
         {alphabet.map((letter) => (
           <LetterButton
             type="button"
             key={letter}
-            onClick={() => setSelectedLetter(letter)}
+            onClick={() => {
+              if (playingWord.includes(letter)) {
+                setSelectedWords((prev) => {
+                  const xs = [...prev]
+                  const wordIndex = playingWord.indexOf(letter)
+                  xs[wordIndex] = letter
+                  return xs
+                })
+              } else {
+                if (!wrongWords.includes(letter)) {
+                  setWrongWords((prev) => [...prev, letter])
+                }
+              }
+
+              setPlayingWord((prev) => {
+                const xs = [...prev]
+                const wordIndex = playingWord.indexOf(letter)
+                if (xs[wordIndex]) {
+                  xs[wordIndex] = ""
+                }
+                return xs
+              })
+              setTries((prev) => prev + 1)
+            }}
           >
             {letter}
           </LetterButton>
