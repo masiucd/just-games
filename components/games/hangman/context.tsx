@@ -1,7 +1,7 @@
 import {makeList} from "@utils/helpers"
 import {createContext, FC, useContext, useReducer} from "react"
 
-type GameState = "idle" | "win" | "lose" | "final"
+export type GameState = "idle" | "win" | "lose" | "final"
 
 export const SELECT_LETTER_UPDATE_LISTS = "SELECT_LETTER_UPDATE_LISTS"
 export const SET_INITIAL_STATE = "SET_INITIAL_STATE"
@@ -29,7 +29,9 @@ export type Action =
     }
   | {type: "SET_INITIAL_STATE"; word: Array<string>}
   | {type: "NEW_ROUND"; newState: GameState}
+  | {type: "SET_WINNER"; newState: GameState}
   | {type: "NEW_GAME"; newState: GameState}
+  | {type: "GAME_OVER"; newState: GameState}
 
 type Dispatch = (action: Action) => void
 
@@ -49,6 +51,16 @@ function reducer(state: State, action: Action) {
         initialWord: action.word,
         playingWord: action.word,
         selectedLetters: makeList<string>(action.word.length, "_"),
+      }
+    case "GAME_OVER":
+      return {
+        ...state,
+        gameState: action.newState,
+      }
+    case "SET_WINNER":
+      return {
+        ...state,
+        gameState: action.newState,
       }
     default:
       throw new Error(`action type could not be found!`)

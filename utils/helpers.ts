@@ -7,6 +7,16 @@ export const toInt = (x: string) => parseInt(x, 10)
 export const makeList = <T>(size: number, fill: T): Array<T> =>
   Array(size).fill(fill)
 
+const floor = (x: number) => Math.floor(x)
+const randomInt = () => Math.random()
+
+export const getRandomItemInList = <T>(xs: Readonly<Array<T>>) => {
+  const index = floor(randomInt() * xs.length)
+  return xs[index]
+}
+
+export const wordToList = (word: string) => [...word]
+
 export const alphabet = [
   "a",
   "b",

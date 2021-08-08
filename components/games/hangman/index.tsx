@@ -2,16 +2,17 @@ import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations} from "@styles/styled-record"
-import {alphabet} from "@utils/helpers"
+import {alphabet, getRandomItemInList, wordToList} from "@utils/helpers"
 import cuid from "cuid"
 import {useEffect, useState} from "react"
 
-import {useHangmanDispatch, useHangmanState} from "./context"
+import {GameState, useHangmanDispatch, useHangmanState} from "./context"
 
 const Wrapper = styled.div`
   ${flexColumn()}
-  border: 2px solid red;
+
   min-height: 50vh;
+  position: relative;
 `
 
 const LettersWrapper = styled.section`
@@ -61,32 +62,74 @@ const SelectedWordsWrapper = styled.div`
 const WrongLettersWrapper = styled.div`
   ${wordsStyles};
 `
-// const word = ["l", "e", "g", "i", "a"]
+
+const WORDS_LIST = ["legia", "cow", "horse", "ifkgbg"] as const
+const MAXIMUM_TRIES = 6
+
+const checkLetters = (
+  ourSelectedLetters: Array<string>,
+  expectedLetters: Readonly<Array<string>>,
+) => ourSelectedLetters.every((x) => expectedLetters.includes(x))
+
+const checkWinner = (
+  tries: number,
+  gameState: GameState,
+  selectedLetters: Array<string>,
+  initialWord: Readonly<Array<string>>,
+): boolean =>
+  tries < MAXIMUM_TRIES &&
+  gameState === "idle" &&
+  selectedLetters.length > 0 &&
+  checkLetters(selectedLetters, initialWord)
+
+const init = () => wordToList(getRandomItemInList(WORDS_LIST))
+
 const Hangman = () => {
-  const [word, setWord] = useState(["l", "e", "g", "i", "a"]) // TODO: From options we could change to whatever word we want to use
-  const {selectedLetters, wrongLetters, playingWord, tries, initialWord} =
-    useHangmanState()
+  const [word, setWord] = useState(() => init())
+  const {
+    selectedLetters,
+    wrongLetters,
+    playingWord,
+    tries,
+    initialWord,
+    gameState,
+  } = useHangmanState()
   const dispatch = useHangmanDispatch()
 
-  // console.log({selectedLetters, wrongLetters, playingWord})
-
-  // useEffect(() => {
-  //   if (tries === 6) {
-  //     console.log("GAME OVER")
-  //   }
-  // }, [tries])
-  // useEffect(() => {
-  //   if (tries < 6 && selectedLetters.every((x) => initialWord.includes(x))) {
-  //     console.log("WINNER")
-  //   }
-  // }, [initialWord, selectedLetters, tries])
+  const newWord = () => {
+    setWord(init())
+  }
 
   useEffect(() => {
     dispatch({type: "SET_INITIAL_STATE", word})
   }, [dispatch, word])
 
+  useEffect(() => {
+    if (tries > MAXIMUM_TRIES) {
+      dispatch({type: "GAME_OVER", newState: "lose"})
+    }
+  }, [dispatch, tries])
+
+  useEffect(() => {
+    if (checkWinner(tries, gameState, selectedLetters, initialWord)) {
+      dispatch({type: "SET_WINNER", newState: "win"})
+    }
+  }, [dispatch, gameState, initialWord, selectedLetters, tries])
+
   return (
     <Wrapper>
+      <button
+        onClick={newWord}
+        css={css`
+          ${resetButtonStyles};
+          position: absolute;
+          top: 1rem;
+          left: 2rem;
+          font-size: 0.85rem;
+        `}
+      >
+        New word
+      </button>
       <WordsWrapper>
         <SelectedWordsWrapper>
           <p>Game Word</p>
