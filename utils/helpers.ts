@@ -4,6 +4,8 @@ export const makeIntArray = (amount: number) =>
     .map((n, i) => n + i)
 
 export const toInt = (x: string) => parseInt(x, 10)
+export const makeList = <T>(size: number, fill: T): Array<T> =>
+  Array(size).fill(fill)
 
 export const alphabet = [
   "a",

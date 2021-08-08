@@ -6,6 +6,8 @@ import {alphabet} from "@utils/helpers"
 import cuid from "cuid"
 import {useEffect, useState} from "react"
 
+import {useHangmanDispatch, useHangmanState} from "./context"
+
 const Wrapper = styled.div`
   ${flexColumn()}
   border: 2px solid red;
@@ -53,55 +55,55 @@ const wordsStyles = css`
     margin: 0 0.5rem;
   }
 `
-const SelectedWords = styled.div`
+const SelectedWordsWrapper = styled.div`
   ${wordsStyles};
 `
-const WrongWords = styled.div`
+const WrongLettersWrapper = styled.div`
   ${wordsStyles};
 `
-
-const word = ["l", "o", "l"]
+// const word = ["l", "e", "g", "i", "a"]
 const Hangman = () => {
-  const [wrongWords, setWrongWords] = useState<Array<string>>([])
-  const [playingWord, setPlayingWord] = useState(word)
-  const [selectedLetters, setSelectedWords] = useState<Array<string>>(() =>
-    Array(word.length).fill("_"),
-  )
-  const [tries, setTries] = useState<number>(0)
+  const [word, setWord] = useState(["l", "e", "g", "i", "a"]) // TODO: From options we could change to whatever word we want to use
+  const {selectedLetters, wrongLetters, playingWord, tries, initialWord} =
+    useHangmanState()
+  const dispatch = useHangmanDispatch()
 
-  // console.log("playingWord", playingWord)
-  // console.log("selectedLetters", selectedLetters)
+  // console.log({selectedLetters, wrongLetters, playingWord})
+
+  // useEffect(() => {
+  //   if (tries === 6) {
+  //     console.log("GAME OVER")
+  //   }
+  // }, [tries])
+  // useEffect(() => {
+  //   if (tries < 6 && selectedLetters.every((x) => initialWord.includes(x))) {
+  //     console.log("WINNER")
+  //   }
+  // }, [initialWord, selectedLetters, tries])
 
   useEffect(() => {
-    if (tries === 6) {
-      console.log("GAME OVER")
-    }
-  }, [tries])
-  useEffect(() => {
-    if (tries < 6 && selectedLetters.every((x) => word.includes(x))) {
-      console.log("WINNER")
-    }
-  }, [selectedLetters, tries])
+    dispatch({type: "SET_INITIAL_STATE", word})
+  }, [dispatch, word])
 
   return (
     <Wrapper>
       <WordsWrapper>
-        <SelectedWords>
+        <SelectedWordsWrapper>
           <p>Game Word</p>
           <div>
             {selectedLetters.map((x) => (
               <span key={cuid()}>{x}</span>
             ))}
           </div>
-        </SelectedWords>
-        <WrongWords>
+        </SelectedWordsWrapper>
+        <WrongLettersWrapper>
           <p>Wrong letters</p>
           <div>
-            {wrongWords.map((word) => (
+            {wrongLetters.map((word) => (
               <span key={word}>{word}</span>
             ))}
           </div>
-        </WrongWords>
+        </WrongLettersWrapper>
       </WordsWrapper>
 
       <LettersWrapper>
@@ -110,28 +112,30 @@ const Hangman = () => {
             type="button"
             key={letter}
             onClick={() => {
+              const wordIndex = playingWord.indexOf(letter)
+              const newSelectedLetters = [...selectedLetters]
+              let newWrongLetters = wrongLetters
+              const newPlayingWord = [...playingWord]
+              let hasMatch = false
+
               if (playingWord.includes(letter)) {
-                setSelectedWords((prev) => {
-                  const xs = [...prev]
-                  const wordIndex = playingWord.indexOf(letter)
-                  xs[wordIndex] = letter
-                  return xs
-                })
+                newSelectedLetters[wordIndex] = letter
+                hasMatch = true
               } else {
-                if (!wrongWords.includes(letter)) {
-                  setWrongWords((prev) => [...prev, letter])
+                if (!wrongLetters.includes(letter)) {
+                  newWrongLetters = [...wrongLetters, letter]
                 }
               }
-
-              setPlayingWord((prev) => {
-                const xs = [...prev]
-                const wordIndex = playingWord.indexOf(letter)
-                if (xs[wordIndex]) {
-                  xs[wordIndex] = ""
-                }
-                return xs
+              if (newPlayingWord[wordIndex]) {
+                newPlayingWord[wordIndex] = ""
+              }
+              dispatch({
+                type: "SELECT_LETTER_UPDATE_LISTS",
+                newSelectedLetters,
+                newWrongLetters,
+                newPlayingWord,
+                hasMatch,
               })
-              setTries((prev) => prev + 1)
             }}
           >
             {letter}

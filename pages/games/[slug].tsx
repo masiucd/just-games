@@ -1,6 +1,7 @@
 import {Field, GameSlug} from "@app-types/blog"
 import Title from "@components/common/title"
 import Hangman from "@components/games/hangman"
+import HangmanProvider from "@components/games/hangman/context"
 import {TicTacToe} from "@components/games/tic-tac-toe"
 import TicToeProvider from "@components/games/tic-tac-toe/context"
 import {css} from "@emotion/react"
@@ -18,7 +19,11 @@ const renderGame = (slug: GameSlug): JSX.Element => {
     case "black-jack":
       return <h1>Black jack</h1>
     case "hangman":
-      return <Hangman />
+      return (
+        <HangmanProvider>
+          <Hangman />
+        </HangmanProvider>
+      )
     case "tic-tac-toe":
       return (
         <TicToeProvider>
