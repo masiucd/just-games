@@ -1,14 +1,19 @@
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
-import {flexRow, resetButtonStyles} from "@styles/common"
+import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations} from "@styles/styled-record"
 import {alphabet} from "@utils/helpers"
 import cuid from "cuid"
-import {Fragment, useEffect, useState} from "react"
+import {useEffect, useState} from "react"
+
+const Wrapper = styled.div`
+  ${flexColumn()}
+  border: 2px solid red;
+  min-height: 50vh;
+`
 
 const LettersWrapper = styled.section`
   ${flexRow()};
-  border: 2px solid red;
   max-width: 30rem;
   margin: 2rem auto;
   gap: 0.4rem;
@@ -29,14 +34,20 @@ const LetterButton = styled.button`
 
 const WordsWrapper = styled.section`
   ${flexRow()}
-  border: 2px solid red;
   margin-bottom: 3rem;
+  min-width: 35rem;
+  min-height: 5rem;
+  border-bottom: 2px solid ${colors.colorTextPrimary};
+  padding-bottom: 2rem; ;
 `
 
 const wordsStyles = css`
-  ${flexRow()}
-  border: 2px solid red;
+  ${flexColumn()}
   flex: 1;
+  min-height: 5rem;
+  p {
+    margin-bottom: auto;
+  }
   span {
     display: inline-block;
     margin: 0 0.5rem;
@@ -53,13 +64,13 @@ const word = ["l", "o", "l"]
 const Hangman = () => {
   const [wrongWords, setWrongWords] = useState<Array<string>>([])
   const [playingWord, setPlayingWord] = useState(word)
-  const [selectedWords, setSelectedWords] = useState<Array<string>>(() =>
+  const [selectedLetters, setSelectedWords] = useState<Array<string>>(() =>
     Array(word.length).fill("_"),
   )
   const [tries, setTries] = useState<number>(0)
 
   // console.log("playingWord", playingWord)
-  // console.log("selectedWords", selectedWords)
+  // console.log("selectedLetters", selectedLetters)
 
   useEffect(() => {
     if (tries === 6) {
@@ -67,23 +78,29 @@ const Hangman = () => {
     }
   }, [tries])
   useEffect(() => {
-    if (tries < 6 && selectedWords.every((x) => word.includes(x))) {
+    if (tries < 6 && selectedLetters.every((x) => word.includes(x))) {
       console.log("WINNER")
     }
-  }, [tries])
+  }, [selectedLetters, tries])
 
   return (
-    <Fragment>
+    <Wrapper>
       <WordsWrapper>
         <SelectedWords>
-          {selectedWords.map((x) => (
-            <span key={cuid()}>{x}</span>
-          ))}
+          <p>Game Word</p>
+          <div>
+            {selectedLetters.map((x) => (
+              <span key={cuid()}>{x}</span>
+            ))}
+          </div>
         </SelectedWords>
         <WrongWords>
-          {wrongWords.map((word) => (
-            <span key={word}>{word}</span>
-          ))}
+          <p>Wrong letters</p>
+          <div>
+            {wrongWords.map((word) => (
+              <span key={word}>{word}</span>
+            ))}
+          </div>
         </WrongWords>
       </WordsWrapper>
 
@@ -121,7 +138,7 @@ const Hangman = () => {
           </LetterButton>
         ))}
       </LettersWrapper>
-    </Fragment>
+    </Wrapper>
   )
 }
 
