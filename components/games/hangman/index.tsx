@@ -6,7 +6,7 @@ import {colors, elevations} from "@styles/styled-record"
 import {alphabet, getRandomItemInList, wordToList} from "@utils/helpers"
 import cuid from "cuid"
 import {motion} from "framer-motion"
-import {useEffect, useState} from "react"
+import {useEffect} from "react"
 
 import {GameState, useHangmanDispatch, useHangmanState} from "./context"
 import WinLoseButton from "./win-lose-button"
@@ -65,7 +65,8 @@ const WrongLettersWrapper = styled.div`
   ${wordsStyles};
 `
 
-const WORDS_LIST = ["legia", "cow", "horse", "ifkgbg"] as const
+const WORDS_LIST = ["legia", "cow", "horse", "dog", "apple"] as const
+const getRandomWord = () => wordToList(getRandomItemInList(WORDS_LIST))
 const MAXIMUM_TRIES = 6
 
 const checkLetters = (
@@ -84,10 +85,7 @@ const checkWinner = (
   selectedLetters.length > 0 &&
   checkLetters(selectedLetters, initialWord)
 
-const init = () => wordToList(getRandomItemInList(WORDS_LIST))
-
 const Hangman = () => {
-  const [word, setWord] = useState<string[]>(() => init())
   const {
     selectedLetters,
     wrongLetters,
@@ -99,17 +97,16 @@ const Hangman = () => {
   const dispatch = useHangmanDispatch()
 
   const newWord = () => {
-    setWord(init())
-    dispatch({type: "NEW_WORD", word})
+    dispatch({type: "NEW_WORD", word: getRandomWord()})
   }
   useEffect(() => {
     if (gameState === "play") {
-      dispatch({type: "SET_INITIAL_STATE", word})
+      dispatch({type: "SET_INITIAL_STATE", word: getRandomWord()})
     }
-  }, [dispatch, gameState, word])
+  }, [dispatch, gameState])
 
   useEffect(() => {
-    if (tries > MAXIMUM_TRIES) {
+    if (tries >= MAXIMUM_TRIES) {
       dispatch({type: "GAME_OVER", newState: "lose"})
     }
   }, [dispatch, tries])
