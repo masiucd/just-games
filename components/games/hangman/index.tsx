@@ -1,21 +1,23 @@
+import AnimatedWrapper from "@components/common/animated-wrapper"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations} from "@styles/styled-record"
 import {alphabet, getRandomItemInList, wordToList} from "@utils/helpers"
 import cuid from "cuid"
+import {motion} from "framer-motion"
 import {useEffect, useState} from "react"
 
 import {GameState, useHangmanDispatch, useHangmanState} from "./context"
+import WinLoseButton from "./win-lose-button"
 
 const Wrapper = styled.div`
   ${flexColumn()}
-
   min-height: 50vh;
   position: relative;
 `
 
-const LettersWrapper = styled.section`
+const LettersWrapper = styled(motion.section)`
   ${flexRow()};
   max-width: 30rem;
   margin: 2rem auto;
@@ -78,14 +80,14 @@ const checkWinner = (
   initialWord: Readonly<Array<string>>,
 ): boolean =>
   tries < MAXIMUM_TRIES &&
-  gameState === "idle" &&
+  gameState === "play" &&
   selectedLetters.length > 0 &&
   checkLetters(selectedLetters, initialWord)
 
 const init = () => wordToList(getRandomItemInList(WORDS_LIST))
 
 const Hangman = () => {
-  const [word, setWord] = useState(() => init())
+  const [word, setWord] = useState<string[]>(() => init())
   const {
     selectedLetters,
     wrongLetters,
@@ -98,11 +100,13 @@ const Hangman = () => {
 
   const newWord = () => {
     setWord(init())
+    dispatch({type: "NEW_WORD", word})
   }
-
   useEffect(() => {
-    dispatch({type: "SET_INITIAL_STATE", word})
-  }, [dispatch, word])
+    if (gameState === "play") {
+      dispatch({type: "SET_INITIAL_STATE", word})
+    }
+  }, [dispatch, gameState, word])
 
   useEffect(() => {
     if (tries > MAXIMUM_TRIES) {
@@ -116,9 +120,49 @@ const Hangman = () => {
     }
   }, [dispatch, gameState, initialWord, selectedLetters, tries])
 
+  const selectLetter = (letter: string) => {
+    const wordIndex = playingWord.indexOf(letter)
+    const newSelectedLetters = [...selectedLetters]
+    let newWrongLetters = wrongLetters
+    const newPlayingWord = [...playingWord]
+    let hasMatch = false
+
+    if (playingWord.includes(letter)) {
+      newSelectedLetters[wordIndex] = letter
+      hasMatch = true
+    } else {
+      if (!wrongLetters.includes(letter)) {
+        newWrongLetters = [...wrongLetters, letter]
+      }
+    }
+    if (newPlayingWord[wordIndex]) {
+      newPlayingWord[wordIndex] = ""
+    }
+    dispatch({
+      type: "SELECT_LETTER_UPDATE_LISTS",
+      newSelectedLetters,
+      newWrongLetters,
+      newPlayingWord,
+      hasMatch,
+    })
+  }
+
   return (
     <Wrapper>
+      {gameState === "idle" && (
+        <button
+          css={css`
+            ${resetButtonStyles};
+          `}
+          onClick={() => {
+            dispatch({type: "START_GAME", newState: "play"})
+          }}
+        >
+          Start
+        </button>
+      )}
       <button
+        disabled={gameState !== "play"}
         onClick={newWord}
         css={css`
           ${resetButtonStyles};
@@ -130,6 +174,12 @@ const Hangman = () => {
       >
         New word
       </button>
+      {gameState === "play" && (
+        <p>
+          {" "}
+          {tries}/{MAXIMUM_TRIES} Tries
+        </p>
+      )}
       <WordsWrapper>
         <SelectedWordsWrapper>
           <p>Game Word</p>
@@ -142,49 +192,33 @@ const Hangman = () => {
         <WrongLettersWrapper>
           <p>Wrong letters</p>
           <div>
-            {wrongLetters.map((word) => (
-              <span key={word}>{word}</span>
+            {wrongLetters.map((letter) => (
+              <span key={letter}>{letter}</span>
             ))}
           </div>
         </WrongLettersWrapper>
       </WordsWrapper>
 
-      <LettersWrapper>
-        {alphabet.map((letter) => (
-          <LetterButton
-            type="button"
-            key={letter}
-            onClick={() => {
-              const wordIndex = playingWord.indexOf(letter)
-              const newSelectedLetters = [...selectedLetters]
-              let newWrongLetters = wrongLetters
-              const newPlayingWord = [...playingWord]
-              let hasMatch = false
-
-              if (playingWord.includes(letter)) {
-                newSelectedLetters[wordIndex] = letter
-                hasMatch = true
-              } else {
-                if (!wrongLetters.includes(letter)) {
-                  newWrongLetters = [...wrongLetters, letter]
-                }
-              }
-              if (newPlayingWord[wordIndex]) {
-                newPlayingWord[wordIndex] = ""
-              }
-              dispatch({
-                type: "SELECT_LETTER_UPDATE_LISTS",
-                newSelectedLetters,
-                newWrongLetters,
-                newPlayingWord,
-                hasMatch,
-              })
-            }}
-          >
-            {letter}
-          </LetterButton>
-        ))}
-      </LettersWrapper>
+      <AnimatedWrapper isOn={gameState !== "idle"}>
+        <LettersWrapper
+          layout
+          initial={{opacity: 0.45}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0.65, x: 1000}}
+          transition={{damping: 6}}
+        >
+          {alphabet.map((letter) => (
+            <LetterButton
+              type="button"
+              key={letter}
+              onClick={() => selectLetter(letter)}
+            >
+              {letter}
+            </LetterButton>
+          ))}
+        </LettersWrapper>
+      </AnimatedWrapper>
+      <WinLoseButton />
     </Wrapper>
   )
 }

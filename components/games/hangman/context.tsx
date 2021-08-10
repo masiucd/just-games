@@ -1,7 +1,7 @@
 import {makeList} from "@utils/helpers"
 import {createContext, FC, useContext, useReducer} from "react"
 
-export type GameState = "idle" | "win" | "lose" | "final"
+export type GameState = "idle" | "play" | "win" | "lose" | "final"
 
 export const SELECT_LETTER_UPDATE_LISTS = "SELECT_LETTER_UPDATE_LISTS"
 export const SET_INITIAL_STATE = "SET_INITIAL_STATE"
@@ -15,7 +15,6 @@ export interface State {
   initialWord: Readonly<Array<string>> // will stay same all the time
   tries: number
   score: number
-  gameSets: number
   gameState: GameState
 }
 
@@ -28,10 +27,11 @@ export type Action =
       hasMatch: boolean
     }
   | {type: "SET_INITIAL_STATE"; word: Array<string>}
-  | {type: "NEW_ROUND"; newState: GameState}
+  | {type: "START_GAME"; newState: GameState}
   | {type: "SET_WINNER"; newState: GameState}
   | {type: "NEW_GAME"; newState: GameState}
   | {type: "GAME_OVER"; newState: GameState}
+  | {type: "NEW_WORD"; word: Array<string>}
 
 type Dispatch = (action: Action) => void
 
@@ -52,6 +52,11 @@ function reducer(state: State, action: Action) {
         playingWord: action.word,
         selectedLetters: makeList<string>(action.word.length, "_"),
       }
+    case "START_GAME":
+      return {
+        ...state,
+        gameState: action.newState,
+      }
     case "GAME_OVER":
       return {
         ...state,
@@ -61,6 +66,25 @@ function reducer(state: State, action: Action) {
       return {
         ...state,
         gameState: action.newState,
+        score: state.score + 1,
+      }
+    case "NEW_WORD":
+      return {
+        ...state,
+        initialWord: action.word,
+        playingWord: action.word,
+        selectedLetters: makeList<string>(action.word.length, "_"),
+        wrongLetters: [],
+      }
+    case "NEW_GAME":
+      return {
+        ...state,
+        initialWord: [],
+        playingWord: [],
+        selectedLetters: [],
+        wrongLetters: [],
+        gameState: action.newState,
+        tries: 0,
       }
     default:
       throw new Error(`action type could not be found!`)
@@ -77,7 +101,6 @@ const HangmanProvider: FC = ({children}) => {
     playingWord: [],
     tries: 0,
     score: 0,
-    gameSets: 3,
     gameState: "idle",
     initialWord: [],
   })
