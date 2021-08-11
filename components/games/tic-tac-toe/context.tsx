@@ -19,6 +19,7 @@ const TicToeProvider: FC<Props> = ({children, amountOfGameSets = 3}) => {
     amountOfGameSets,
     finalWinner: null,
     isOptionsDialogOpen: false,
+    isDraw: false,
     score: {
       oScore: 0,
       xScore: 0,

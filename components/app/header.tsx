@@ -1,11 +1,15 @@
 import AnimatedWrapper from "@components/common/animated-wrapper"
 import AppTitle from "@components/common/app-title"
 import {css} from "@emotion/react"
+import styled from "@emotion/styled"
+import {useTheme} from "@hooks/theme"
 import {useToggle} from "@hooks/toggle"
-import {resetButtonStyles} from "@styles/common"
+import {flexRow, resetButtonStyles} from "@styles/common"
 import {above} from "@styles/media-query"
 import {colors, sizes} from "@styles/styled-record"
 import Dynamic from "next/dynamic"
+import {FC} from "react"
+
 const Navbar = Dynamic(() => import("./navbar"))
 
 const headerStyles = css`
@@ -21,8 +25,17 @@ const headerStyles = css`
   }
 `
 
+const ActionWrapper = styled.aside`
+  position: absolute;
+  top: 1.2rem;
+  right: 2rem;
+  min-width: 9em;
+  ${flexRow({justifyContent: "space-between"})};
+`
+
 const Header = (): JSX.Element => {
   const [isMenuOpen, toggleMenuIsOpen, closeMenu] = useToggle()
+  const {handleTheme} = useTheme("dark")
 
   return (
     <header css={headerStyles}>
@@ -70,24 +83,27 @@ const Header = (): JSX.Element => {
       <AnimatedWrapper isOn={isMenuOpen}>
         <Navbar closeMenu={closeMenu} />
       </AnimatedWrapper>
-      <MenuButton onClick={toggleMenuIsOpen} />
+      <ActionWrapper>
+        <ActionButton onClick={toggleMenuIsOpen}> Menu </ActionButton>
+        <ActionButton onClick={handleTheme as () => void}> Theme </ActionButton>
+      </ActionWrapper>
     </header>
   )
 }
 
-const MenuButton = ({onClick}: {onClick: () => void}): JSX.Element => (
+interface ActionButtonProps {
+  onClick: () => void
+}
+const ActionButton: FC<ActionButtonProps> = ({onClick, children}) => (
   <button
     onClick={onClick}
     css={css`
       ${resetButtonStyles};
-      position: absolute;
-      top: 1.2rem;
-      right: 2rem;
       width: 4em;
-      font-size: 1rem;
+      font-size: 0.9rem;
     `}
   >
-    menu
+    {children}
   </button>
 )
 

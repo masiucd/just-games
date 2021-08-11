@@ -8,10 +8,14 @@ import Dynamic from "next/dynamic"
 import {Fragment, useEffect} from "react"
 
 import {useTicTacToeDispatch, useTicTacToeState} from "./context"
+import {AMOUNT_OF_SQUARES} from "./reducer"
 import Square from "./square"
 import WinningMessage from "./winning-message"
 
 const OptionsDialog = Dynamic(() => import("./options-dialog"))
+
+const isDraw = (squares: Array<string | null>): boolean =>
+  squares.filter(Boolean).length === AMOUNT_OF_SQUARES
 
 const GRID_WIDTH = 45
 const Grid = styled.section`
@@ -89,6 +93,13 @@ export const TicTacToe = (): JSX.Element => {
       dispatch({type: "SET_FINAL_WINNER", newGameState: "final", winningSymbol})
     }
   }, [amountOfGameSets, dispatch, score.oScore, score.xScore, winningSymbol])
+
+  useEffect(() => {
+    if (isDraw(squares)) {
+      dispatch({type: "SET_DRAW", gameState: "draw"})
+    }
+  }, [dispatch, squares])
+
   return (
     <Fragment>
       <div id="options" />
@@ -123,6 +134,7 @@ export const TicTacToe = (): JSX.Element => {
           left: 2rem;
           bottom: 8rem;
         `}
+        disabled={gameState === "final"}
         onClick={() => {
           dispatch({
             type: "OPEN_OPTIONS_DIALOG",

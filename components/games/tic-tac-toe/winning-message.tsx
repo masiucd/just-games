@@ -46,7 +46,16 @@ const WinningMessage: FC = () => {
             }
           `}
         >
-          winner is <span>{winner}</span>
+          {gameState !== "final" ? (
+            <p>
+              winner is <span>{winner}</span>
+            </p>
+          ) : (
+            <p>
+              Final winner is <span>{winner}</span> <br />
+              congratulations 🎉
+            </p>
+          )}
         </strong>
         <ButtonWrapper>
           <button

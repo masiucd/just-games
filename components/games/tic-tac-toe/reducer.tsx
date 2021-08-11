@@ -5,6 +5,7 @@ import {
   OPEN_OPTIONS_DIALOG,
   RESET_GAME,
   SET_AMOUNT_OF_GAME_SET,
+  SET_DRAW,
   SET_FINAL_WINNER,
   SET_SQUARE,
   SET_WINNING_SYMBOL,
@@ -12,6 +13,7 @@ import {
 } from "./types"
 
 export const setAmountOfGameSets = (amount = 3) => amount
+export const AMOUNT_OF_SQUARES = 9
 
 export function reducer(state: State, action: Action) {
   switch (action.type) {
@@ -43,9 +45,10 @@ export function reducer(state: State, action: Action) {
     case NEW_ROUND:
       return {
         ...state,
-        squares: Array(9).fill(null),
+        squares: Array(AMOUNT_OF_SQUARES).fill(null),
         isX: false,
         winner: null,
+        isDraw: false,
         gameState: action.newGameState,
         gameSet: action.newGameSet,
       }
@@ -73,16 +76,23 @@ export function reducer(state: State, action: Action) {
         ...state,
         amountOfGameSets: action.gameSet,
       }
+    case SET_DRAW:
+      return {
+        ...state,
+        isDraw: true,
+        gameState: action.gameState,
+      }
     case RESET_GAME:
       return {
         ...state,
-        squares: Array(9).fill(null),
+        squares: Array(AMOUNT_OF_SQUARES).fill(null),
         isX: false,
         winner: null,
         gameState: action.newGameState,
         gameSet: 0,
         amountOfGameSets: setAmountOfGameSets(action.gameSets),
         finalWinner: null,
+        isDraw: false,
         score: {
           oScore: 0,
           xScore: 0,
