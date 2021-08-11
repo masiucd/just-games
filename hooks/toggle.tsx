@@ -11,10 +11,10 @@ type ReturnType = [boolean, FnType, FnType, FnType, ToggleMap]
 
 const useToggle = (initialState = false): ReturnType => {
   const [state, setState] = useState(initialState)
+
   const toggle = (): void => {
     setState((prevState) => !prevState)
   }
-
   const toTrue = (): void => {
     setState(true)
   }
