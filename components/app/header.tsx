@@ -34,7 +34,11 @@ const ActionWrapper = styled.aside`
 `
 
 const Header = (): JSX.Element => {
-  const [isMenuOpen, toggleMenuIsOpen, closeMenu] = useToggle()
+  const {
+    state: isMenuOpen,
+    toggle: toggleMenuIsOpen,
+    toFalse: closeMenu,
+  } = useToggle()
   const {handleTheme} = useTheme("dark")
 
   return (

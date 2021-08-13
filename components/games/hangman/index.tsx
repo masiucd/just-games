@@ -174,7 +174,7 @@ const Hangman = () => {
       {gameState === "play" && (
         <p>
           {" "}
-          {tries}/{MAXIMUM_TRIES} Tries
+          {tries}/{MAXIMUM_TRIES} Wrong
         </p>
       )}
       <WordsWrapper>

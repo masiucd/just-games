@@ -1,0 +1,11 @@
+[
+  {"id": 1, "text": "games", "parentId": 0, "path": "/games"},
+  {"id": 2, "text": "routes", "parentId": 0, "path": "/games"},
+  {"id": 3, "text": "hangman", "parentId": 1, "path": "/games/hangman"},
+  {"id": 4, "text": "tic-tac-toe", "parentId": 1, "path": "/games/tic-tac-toe"},
+  {"id": 5, "text": "quiz", "parentId": 1, "path": "/games/quiz"},
+  {"id": 6, "text": "black-jack", "parentId": 1, "path": "/games/black-jack"},
+  {"id": 7, "text": "home", "parentId": 2, "path": "/"},
+  {"id": 8, "text": "about", "parentId": 2, "path": "/about"},
+  {"id": 9, "text": "contact", "parentId": 2, "path": "/contact"}
+]

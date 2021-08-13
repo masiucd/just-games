@@ -23,7 +23,11 @@ const ButtonWrapper = styled.div`
 const displayMessage = (gameState: GameState, winner: string | null) => {
   switch (gameState) {
     case "game-over":
-      return <p>Winner is {winner}</p>
+      return (
+        <p>
+          Winner is <span>{winner}</span>{" "}
+        </p>
+      )
     case "final":
       return (
         <p>
@@ -32,7 +36,11 @@ const displayMessage = (gameState: GameState, winner: string | null) => {
         </p>
       )
     case "draw":
-      return <p>We got a Draw, no point gets delivered</p>
+      return (
+        <p>
+          We got a <span>draw</span>, no point gets delivered
+        </p>
+      )
     default:
       return ""
   }
@@ -60,7 +68,7 @@ const WinningMessage: FC = () => {
       >
         <strong
           css={css`
-            font-size: 2rem;
+            font-size: 1.2rem;
             span {
               color: ${colors.colorTextPrimary};
               border-bottom: 2px solid ${colors.colorHighlight};

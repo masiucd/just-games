@@ -8,6 +8,10 @@
     "route": "/games"
   },
   {
+    "name": "About",
+    "route": "/about"
+  },
+  {
     "name": "Contact",
     "route": "/contact"
   }
