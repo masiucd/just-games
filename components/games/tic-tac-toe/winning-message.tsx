@@ -7,6 +7,7 @@ import {motion} from "framer-motion"
 import {FC} from "react"
 
 import {useTicTacToeDispatch, useTicTacToeState} from "./context"
+import {GameState} from "./types"
 
 const ButtonWrapper = styled.div`
   min-width: 12rem;
@@ -19,12 +20,32 @@ const ButtonWrapper = styled.div`
   }
 `
 
+const displayMessage = (gameState: GameState, winner: string | null) => {
+  switch (gameState) {
+    case "game-over":
+      return <p>Winner is {winner}</p>
+    case "final":
+      return (
+        <p>
+          Final winner is <span>{winner}</span> <br />
+          congratulations 🎉
+        </p>
+      )
+    case "draw":
+      return <p>We got a Draw, no point gets delivered</p>
+    default:
+      return ""
+  }
+}
+
 const WinningMessage: FC = () => {
   const {winner, amountOfGameSets, gameSet, gameState} = useTicTacToeState()
   const dispatch = useTicTacToeDispatch()
   const isFinalState = gameState === "final"
+  const isDraw = gameState === "draw"
+
   return (
-    <AnimatedWrapper isOn={winner !== null}>
+    <AnimatedWrapper isOn={winner !== null || isDraw}>
       <motion.section
         layout
         initial={{opacity: 0.75}}
@@ -46,16 +67,7 @@ const WinningMessage: FC = () => {
             }
           `}
         >
-          {gameState !== "final" ? (
-            <p>
-              winner is <span>{winner}</span>
-            </p>
-          ) : (
-            <p>
-              Final winner is <span>{winner}</span> <br />
-              congratulations 🎉
-            </p>
-          )}
+          {displayMessage(gameState, winner)}
         </strong>
         <ButtonWrapper>
           <button
