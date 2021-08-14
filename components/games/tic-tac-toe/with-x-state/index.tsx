@@ -29,6 +29,7 @@ interface TicTacToeCtx {
   squares: Array<Player | null>
   isX: boolean
   winner: Player | null
+  lastWinner: Player | null
   currentGameSet: number
   amountOfGameSets: number
   finalWinner: null | Player
@@ -57,6 +58,7 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
       squares: makeList(AMOUNT_OF_SQUARES, null),
       isX: false,
       winner: null,
+      lastWinner: null,
       currentGameSet: 0,
       amountOfGameSets: 3,
       finalWinner: null,
@@ -81,6 +83,7 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
         initial: "playing",
         states: {
           playing: {
+            always: [{target: "finalWinner", cond: "checkForFinalWinner"}],
             on: {
               [SELECT_SQUARE]: {
                 actions: assign({
@@ -102,6 +105,7 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
                 target: "#starting.winning",
                 actions: assign({
                   winner: (_, {winner}) => winner,
+                  lastWinner: (_, {winner}) => winner,
                   score: ({score}, {winner}) => ({
                     oScore: winner === "O" ? score.oScore + 1 : score.oScore,
                     xScore: winner === "X" ? score.xScore + 1 : score.xScore,
@@ -111,10 +115,6 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
             },
           },
           winning: {
-            // entry: assign((context) => ({
-            //   some: ""
-            // })),
-            // always: [{target: "gameOver", cond: "isOnFinalAnswer"}],
             on: {
               [NEW_ROUND]: {
                 actions: ["incrementGameSet", "setNewSet"],
@@ -127,6 +127,9 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
           },
           loosing: {},
           draw: {},
+          finalWinner: {
+            //
+          },
           gameOver: {},
         },
       },
@@ -141,6 +144,7 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
         currentGameSet: 0,
         amountOfGameSets: 3,
         finalWinner: null,
+        lastWinner: null,
         isOptionsDialogOpen: false,
         isDraw: false,
         score: {
@@ -161,6 +165,10 @@ const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
       incrementGameSet: assign({
         currentGameSet: ({currentGameSet}) => currentGameSet + 1,
       }),
+    },
+    guards: {
+      checkForFinalWinner: ({currentGameSet, amountOfGameSets}) =>
+        currentGameSet === amountOfGameSets,
     },
   },
 )
@@ -216,12 +224,24 @@ const GameSetWrapper = styled.aside`
   padding: 1rem 0; ;
 `
 
+const FinalWinnerWrapper = styled(motion.div)`
+  ${flexColumn()};
+  padding-bottom: 1rem;
+  p {
+    span {
+      color: ${colors.colorTextPrimary};
+      font-weight: bold;
+    }
+  }
+`
+
 const TicTacToeWithXState = () => {
   const [state, send] = useMachine(ticTacToeMachine)
   const {
     squares,
     score: {xScore, oScore},
     winner,
+    lastWinner,
     currentGameSet,
     amountOfGameSets,
   } = state.context
@@ -243,12 +263,29 @@ const TicTacToeWithXState = () => {
   }, [send, squares])
 
   console.log("value", state.value)
-  console.log(state)
+
   return (
     <GameWrapper>
       {isIdle && (
         <button onClick={() => send({type: "START_GAME"})}>start</button>
       )}
+
+      <AnimatedWrapper isOn={state.matches("start.finalWinner")}>
+        <FinalWinnerWrapper
+          initial={{opacity: 0, scale: 0.65}}
+          animate={{opacity: 1, scale: 1}}
+          exit={{opacity: 0, scale: 0.7}}
+          transition={{
+            delay: 0.25,
+            damping: 4,
+          }}
+        >
+          <h3>Congratulations! 🎉🍾😍 </h3>
+          <p>
+            Final winner is player <span>{lastWinner}</span>{" "}
+          </p>
+        </FinalWinnerWrapper>
+      </AnimatedWrapper>
 
       <AnimatedWrapper isOn={hasStart}>
         <ScoreWrapper
@@ -289,13 +326,18 @@ const TicTacToeWithXState = () => {
           ))}
         </Grid>
       </AnimatedWrapper>
-      <AnimatedWrapper isOn={hasAnWinner}>
+      <AnimatedWrapper isOn={hasAnWinner || state.matches("start.finalWinner")}>
         <GameSetWrapper>
           <h4>
             Winner is <span>{winner}</span>{" "}
           </h4>
           <div className="buttons">
-            <button onClick={() => send({type: "NEW_ROUND"})}>New round</button>
+            <button
+              disabled={state.matches("start.finalWinner")}
+              onClick={() => send({type: "NEW_ROUND"})}
+            >
+              New round
+            </button>
             <button>New game</button>
           </div>
         </GameSetWrapper>

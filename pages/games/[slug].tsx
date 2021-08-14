@@ -49,7 +49,7 @@ const GameSlugPage: FC<Result> = ({postItem}): JSX.Element => {
       <Title
         incomingStyles={css`
           text-align: center;
-          margin-bottom: 1.5rem;
+          margin: 0;
         `}
       >
         <h1>{postItem.title}</h1>
