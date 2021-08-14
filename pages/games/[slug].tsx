@@ -3,8 +3,9 @@ import Title from "@components/common/title"
 import BlackJackGame from "@components/games/black-jack"
 import Hangman from "@components/games/hangman"
 import HangmanProvider from "@components/games/hangman/context"
-import {TicTacToe} from "@components/games/tic-tac-toe"
-import TicToeProvider from "@components/games/tic-tac-toe/context"
+// import {TicTacToe} from "@components/games/tic-tac-toe"
+// import TicToeProvider from "@components/games/tic-tac-toe/context"
+import TicTacToeWithXState from "@components/games/tic-tac-toe/with-x-state"
 import {css} from "@emotion/react"
 import fs from "fs"
 import {getPostBySlug} from "lib/api"
@@ -27,9 +28,10 @@ const renderGame = (slug: GameSlug): JSX.Element => {
       )
     case "tic-tac-toe":
       return (
-        <TicToeProvider>
-          <TicTacToe />
-        </TicToeProvider>
+        <TicTacToeWithXState />
+        // <TicToeProvider>
+        //   <TicTacToe />
+        // </TicToeProvider>
       )
 
     default:
