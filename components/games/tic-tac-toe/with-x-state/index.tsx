@@ -1,8 +1,8 @@
 import AnimatedWrapper from "@components/common/animated-wrapper"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
-import {flexRow, resetButtonStyles} from "@styles/common"
-import {colors, elevations} from "@styles/styled-record"
+import {resetButtonStyles} from "@styles/common"
+import {colors} from "@styles/styled-record"
 import {checkWinner} from "@utils/check-winner"
 import {useMachine} from "@xstate/react"
 import cuid from "cuid"
@@ -12,6 +12,7 @@ import {useEffect} from "react"
 import FinalWinner from "./final-winner"
 import GameButtons from "./game-buttons"
 import {Player, ticTacToeMachine} from "./machine"
+import Score from "./score"
 import SettingsDialog from "./settings-dialog"
 import StartButtons from "./start-buttons"
 import {checkIfDraw} from "./utils"
@@ -39,19 +40,6 @@ const Grid = styled(motion.section)`
 
   button {
     ${squareStyles};
-  }
-`
-
-const ScoreWrapper = styled(motion.div)`
-  ${flexRow({justifyContent: "space-evenly"})}
-  border-radius: 3px 3px 0 0;
-  padding: 1rem 0;
-  box-shadow: ${elevations.shadowInner};
-  background-color: ${colors.colorGray100};
-  p {
-    span {
-      color: ${colors.colorTextPrimary};
-    }
   }
 `
 
@@ -106,25 +94,12 @@ const TicTacToeWithXState = () => {
       />
 
       <AnimatedWrapper isOn={hasStart}>
-        <ScoreWrapper
-          initial={{opacity: 0, scale: 0.65}}
-          animate={{opacity: 1, scale: 1}}
-          exit={{opacity: 0, scale: 0.7}}
-          transition={{
-            delay: 0.25,
-            damping: 4,
-          }}
-        >
-          <p>
-            <span>X</span> score: {xScore}{" "}
-          </p>
-          <p>
-            Set {currentGameSet}/{amountOfGameSets}
-          </p>
-          <p>
-            <span>O</span> score: {oScore}{" "}
-          </p>
-        </ScoreWrapper>
+        <Score
+          xScore={xScore}
+          oScore={oScore}
+          currentGameSet={currentGameSet}
+          amountOfGameSets={amountOfGameSets}
+        />
         <Grid
           initial={{opacity: 0, scale: 0.65}}
           animate={{opacity: 1, scale: 1}}
