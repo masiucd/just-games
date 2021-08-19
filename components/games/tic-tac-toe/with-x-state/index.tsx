@@ -1,7 +1,7 @@
 import AnimatedWrapper from "@components/common/animated-wrapper"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
-import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
+import {flexRow, resetButtonStyles} from "@styles/common"
 import {colors, elevations} from "@styles/styled-record"
 import {checkWinner} from "@utils/check-winner"
 import {useMachine} from "@xstate/react"
@@ -9,6 +9,7 @@ import cuid from "cuid"
 import {motion} from "framer-motion"
 import {useEffect} from "react"
 
+import FinalWinner from "./final-winner"
 import GameButtons from "./game-buttons"
 import {Player, ticTacToeMachine} from "./machine"
 import SettingsDialog from "./settings-dialog"
@@ -50,17 +51,6 @@ const ScoreWrapper = styled(motion.div)`
   p {
     span {
       color: ${colors.colorTextPrimary};
-    }
-  }
-`
-
-const FinalWinnerWrapper = styled(motion.div)`
-  ${flexColumn()};
-  padding-bottom: 1rem;
-  p {
-    span {
-      color: ${colors.colorTextPrimary};
-      font-weight: bold;
     }
   }
 `
@@ -110,22 +100,10 @@ const TicTacToeWithXState = () => {
         />
       </AnimatedWrapper>
 
-      <AnimatedWrapper isOn={state.matches("start.finalWinner")}>
-        <FinalWinnerWrapper
-          initial={{opacity: 0, scale: 0.65}}
-          animate={{opacity: 1, scale: 1}}
-          exit={{opacity: 0, scale: 0.7}}
-          transition={{
-            delay: 0.25,
-            damping: 4,
-          }}
-        >
-          <h3>Congratulations! 🎉🍾😍 </h3>
-          <p>
-            Final winner is player <span>{lastWinner}</span>{" "}
-          </p>
-        </FinalWinnerWrapper>
-      </AnimatedWrapper>
+      <FinalWinner
+        hasFinalWinner={state.matches("start.finalWinner")}
+        lastWinner={lastWinner}
+      />
 
       <AnimatedWrapper isOn={hasStart}>
         <ScoreWrapper
