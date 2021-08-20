@@ -39,6 +39,7 @@ const Dialog: React.FC<Props> = ({children, isOpen, incomingStyles}) => {
             animate="animate"
             exit="exit"
             variants={variants}
+            role="dialog"
             transition={{
               delay: 0.15,
               type: "tween",

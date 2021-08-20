@@ -28,6 +28,17 @@ const GameSetWrapper = styled.aside`
   padding: 1rem 0; ;
 `
 
+const renderStatus = (isDraw: boolean, winner: Player | null) => {
+  if (isDraw) {
+    return <h4>We got a draw</h4>
+  }
+  return (
+    <h4>
+      Winner is <span>{winner}</span>{" "}
+    </h4>
+  )
+}
+
 const GameButtons: React.FC<Props> = ({
   hasAnWinner,
   isDraw,
@@ -39,9 +50,7 @@ const GameButtons: React.FC<Props> = ({
   return (
     <AnimatedWrapper isOn={hasAnWinner || isDraw || hasFinalWinner}>
       <GameSetWrapper>
-        <h4>
-          Winner is <span>{winner}</span>{" "}
-        </h4>
+        {renderStatus(isDraw, winner)}
         <div className="buttons">
           <button disabled={hasFinalWinner} onClick={newRound}>
             New round

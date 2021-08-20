@@ -14,6 +14,7 @@ import GameButtons from "./game-buttons"
 import {Player, ticTacToeMachine} from "./machine"
 import Score from "./score"
 import SettingsDialog from "./settings-dialog"
+import Square from "./square"
 import StartButtons from "./start-buttons"
 import {checkIfDraw} from "./utils"
 
@@ -110,12 +111,14 @@ const TicTacToeWithXState = () => {
           }}
         >
           {squares.map((square, index) => (
-            <button
+            <Square
               key={cuid()}
-              onClick={() => send({type: "SELECT_SQUARE", index})}
-            >
-              {square}
-            </button>
+              square={square}
+              index={index}
+              selectSquare={(index: number) => {
+                send({type: "SELECT_SQUARE", index})
+              }}
+            />
           ))}
         </Grid>
       </AnimatedWrapper>
