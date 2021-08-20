@@ -6,3 +6,7 @@ module.exports = withMDX({
   pageExtensions: ["js", "jsx", "ts", "tsx", "md", "mdx"],
   productionBrowserSourceMaps: true,
 })
+
+module.exports = {
+  productionBrowserSourceMaps: true,
+}

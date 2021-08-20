@@ -1,5 +1,4 @@
 import {AnimatePresence} from "framer-motion"
-
 import React from "react"
 
 interface Props {
