@@ -7,7 +7,7 @@ import {checkWinner} from "@utils/check-winner"
 import {useMachine} from "@xstate/react"
 import cuid from "cuid"
 import {motion} from "framer-motion"
-import {useEffect} from "react"
+import {ChangeEvent, useEffect} from "react"
 
 import FinalWinner from "./final-winner"
 import GameButtons from "./game-buttons"
@@ -54,6 +54,7 @@ const TicTacToeWithXState = () => {
     currentGameSet,
     amountOfGameSets,
     isSettingsDialogOpen,
+    hasSelectedSets,
   } = state.context
   const isIdle = state.matches("idle")
   const hasStart = state.matches("start")
@@ -74,13 +75,16 @@ const TicTacToeWithXState = () => {
     }
   }, [send, squares])
 
-  console.log("value", state.value)
-
   return (
     <GameWrapper>
       <SettingsDialog
         isSettingsDialogOpen={isSettingsDialogOpen}
         closeSettingsDialog={() => send({type: "CLOSE_SETTINGS_MODAL"})}
+        setAmountOfSets={(e: ChangeEvent<HTMLSelectElement>) => {
+          const sets = Number(e.target.value)
+          send({type: "SELECT_AMOUNT_OF_SETS", sets})
+        }}
+        hasSelectedSets={hasSelectedSets}
       />
       <AnimatedWrapper isOn={isIdle}>
         <StartButtons
@@ -96,12 +100,14 @@ const TicTacToeWithXState = () => {
 
       <AnimatedWrapper isOn={hasStart}>
         <Score
+          key="a"
           xScore={xScore}
           oScore={oScore}
           currentGameSet={currentGameSet}
           amountOfGameSets={amountOfGameSets}
         />
         <Grid
+          key="b"
           initial={{opacity: 0, scale: 0.65}}
           animate={{opacity: 1, scale: 1}}
           exit={{opacity: 0, scale: 0.7}}

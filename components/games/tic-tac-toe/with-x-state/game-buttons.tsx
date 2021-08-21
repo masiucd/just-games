@@ -51,7 +51,7 @@ const GameButtons: React.FC<Props> = ({
     <AnimatedWrapper isOn={hasAnWinner || isDraw || hasFinalWinner}>
       <GameSetWrapper>
         {renderStatus(isDraw, winner)}
-        <div className="buttons">
+        <div key="buttons" className="buttons">
           <button disabled={hasFinalWinner} onClick={newRound}>
             New round
           </button>

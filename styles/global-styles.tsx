@@ -83,7 +83,7 @@ export const GlobalStyles = () => (
       }
 
       body[data-theme="light"] {
-        --color-text-primary: #7f5af0;
+        --color-text-primary: #ef4565;
         --color-text-text: #212732;
         --color-text-white: #fff;
         --color-bg-background: hsla(0, 100%, 100%, 1);
@@ -100,7 +100,7 @@ export const GlobalStyles = () => (
         --color-gray-700: #4a5568;
         --color-gray-800: #293448;
         --color-gray-900: #1a202c;
-        --color-react: #2cb67d;
+        --color-react: #1c6373;
 
         /* Elevations */
         --shadow-s: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -117,7 +117,7 @@ export const GlobalStyles = () => (
         --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
       }
       body[data-theme="dark"] {
-        --color-text-primary: #f55f94;
+        --color-text-primary: #994ff3;
         --color-text-text: #fff;
         --color-text-white: #fff;
         --color-bg-background: hsla(219, 50%, 11%, 1);
@@ -134,7 +134,7 @@ export const GlobalStyles = () => (
         --color-gray-700: #e2e8f0;
         --color-gray-800: #edf2f7;
         --color-gray-900: #f7fafc;
-        --color-react: #c26384;
+        --color-react: #00ebc7;
 
         /* Elevations */
         --shadow-s: 0 1px 2px 0 rgba(, 0, 0, 0.05);

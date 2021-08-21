@@ -88,6 +88,8 @@ const ActionsWrapper = styled.div`
 
   button {
     ${buttonStyles};
+    color: ${colors.colorBgBlack};
+    border-color: ${colors.colorBgBlack};
   }
 `
 
@@ -148,17 +150,7 @@ const Navbar = ({closeMenu}: Props) => {
             ))}
           </List>
 
-          <SocialList
-            incomingStyles={css`
-              li {
-                a {
-                  color: ${colors.colorBgBackground};
-                  display: inline-block;
-                  color: ${colors.colorTextText};
-                }
-              }
-            `}
-          />
+          <SocialList />
         </FirstHalf>
 
         <SecondHalf

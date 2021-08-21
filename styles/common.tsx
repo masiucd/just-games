@@ -7,14 +7,14 @@ export const resetButtonStyles = css`
   background-color: ${colors.colorBgBackground};
   color: ${colors.colorTextText};
   padding: 0.3rem;
-  border: 2px solid ${colors.colorTextPrimary};
+  border: 2px solid ${colors.colorHighlight};
   box-shadow: ${elevations.shadow};
   outline: none;
   font-size: 1.1rem;
   border-radius: ${borderRadius.borderRadiusM};
   &:disabled {
     opacity: 0.6;
-    cursor: not-allowed;
+    pointer-events: none;
   }
 `
 

@@ -6,6 +6,7 @@ import {AMOUNT_OF_SQUARES} from "../reducer"
 
 const START_GAME = "START_GAME"
 const OPEN_SETTINGS_MODAL = "OPEN_SETTINGS_MODAL"
+const SELECT_AMOUNT_OF_SETS = "SELECT_AMOUNT_OF_SETS"
 const CLOSE_SETTINGS_MODAL = "CLOSE_SETTINGS_MODAL"
 const SELECT_SQUARE = "SELECT_SQUARE"
 const SET_WINNER = "SET_WINNER"
@@ -22,6 +23,7 @@ interface TicTacToeCtx {
   lastWinner: Player | null
   currentGameSet: number
   amountOfGameSets: number
+  hasSelectedSets: boolean
   finalWinner: null | Player
   isSettingsDialogOpen: boolean
   isDraw: boolean
@@ -40,6 +42,7 @@ type TicTacToeEvents =
   | {type: "NEW_GAME"}
   | {type: "OPEN_SETTINGS_MODAL"}
   | {type: "CLOSE_SETTINGS_MODAL"}
+  | {type: "SELECT_AMOUNT_OF_SETS"; sets: number}
 
 export const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
   {
@@ -52,6 +55,7 @@ export const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
       lastWinner: null,
       currentGameSet: 0,
       amountOfGameSets: 3,
+      hasSelectedSets: false,
       finalWinner: null,
       isSettingsDialogOpen: false,
       isDraw: false,
@@ -70,11 +74,18 @@ export const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
           [OPEN_SETTINGS_MODAL]: {
             actions: assign({
               isSettingsDialogOpen: (_) => true,
+              hasSelectedSets: (_) => false,
             }),
           },
           [CLOSE_SETTINGS_MODAL]: {
             actions: assign({
               isSettingsDialogOpen: (_) => false,
+            }),
+          },
+          [SELECT_AMOUNT_OF_SETS]: {
+            actions: assign({
+              amountOfGameSets: (_, {sets}) => sets,
+              hasSelectedSets: (_) => true,
             }),
           },
         },
@@ -167,7 +178,6 @@ export const ticTacToeMachine = createMachine<TicTacToeCtx, TicTacToeEvents>(
         squares: makeList(AMOUNT_OF_SQUARES, null),
         isX: false,
         winner: null,
-        amountOfGameSets: 3,
         finalWinner: null,
         isSettingsDialogOpen: false,
         isDraw: false,

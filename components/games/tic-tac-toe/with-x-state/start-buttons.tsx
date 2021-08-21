@@ -5,6 +5,7 @@ import React from "react"
 interface Props {
   startGame: () => void
   openSettingsDialog: () => void
+  
 }
 
 const Wrapper = styled.div`

@@ -1,9 +1,9 @@
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
-import {above} from "@styles/media-query"
 import {borderRadius, colors, elevations} from "@styles/styled-record"
-import {Fragment} from "react"
+import {getRandomItemInList} from "@utils/helpers"
+import {Fragment, useEffect, useState} from "react"
 
 const GameWrapper = styled.section`
   ${flexColumn()};
@@ -86,7 +86,81 @@ const PlayerWrapper = styled.div`
   ${wrapperStyles};
 `
 
+interface Card {
+  suit: string
+  rank: string
+}
+const getCard = (): Card => {
+  const suits = ["♠", "♣", "❤", "♦"]
+  const ranks = [
+    "A",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "J",
+    "Q",
+    "K",
+  ]
+
+  const suit = getRandomItemInList(suits)
+  const rank = getRandomItemInList(ranks)
+
+  return {suit, rank}
+}
+
+const convertRank = (rank: string) => {
+  switch (rank) {
+    case "2":
+    case "3":
+    case "4":
+    case "5":
+    case "6":
+    case "7":
+    case "8":
+    case "9":
+      return Number(rank)
+    case "10":
+    case "J":
+    case "Q":
+    case "K":
+      return 10
+    case "A":
+      return 11
+    default:
+      return 0
+  }
+}
+
+const calculatePoints = (hand: Array<Card>): number => {
+  let res = 0
+  const handCopy = [...hand]
+
+  if (handCopy.length > 0) {
+    const value = convertRank(handCopy[handCopy.length - 1].rank)
+    res += value
+  }
+  return res
+}
+
 const BlackJackGame = () => {
+  const [playersHand, setPlayersHand] = useState<Array<Card>>([])
+  const [dealersHand, setDealersHand] = useState<Array<Card>>([])
+  const [playersPoints, setPlayersPoints] = useState(0)
+  const [dealersPoints, setDealersPoints] = useState(0)
+
+  useEffect(() => {
+    setPlayersPoints((p) => calculatePoints(playersHand) + p)
+  }, [playersHand])
+
+  console.log("playerHand", playersHand)
+  console.log("playersPoints", playersPoints)
+
   return (
     <Fragment>
       <GameWrapper>
@@ -105,26 +179,34 @@ const BlackJackGame = () => {
         </DealerWrapper>
         <ScoreActionsContainer>
           <ScoreWrapper>
-            <p>Dealer score: 0</p>
-            <p>Player score: 0</p>
+            <p>Dealer score: {dealersPoints}</p>
+            <p>Player score: {playersPoints}</p>
           </ScoreWrapper>
           <ActionsButtons>
             <button>Deal</button>
-            <button>Hit</button>
+            <button
+              disabled={playersPoints > 21}
+              onClick={() => {
+                setPlayersHand((p) => [...p, getCard()])
+                setDealersHand((p) => [...p, getCard()])
+
+                // setPlayersPoints((p) => calculatePoints(playersHand) + p)
+                // setDealersPoints(calculatePoints(dealersHand))
+              }}
+            >
+              Hit
+            </button>
             <button>Stand</button>
           </ActionsButtons>
         </ScoreActionsContainer>
         <PlayerWrapper>
           <h4>Player hand</h4>
-          <Card>
-            <p>card 1</p>
-          </Card>
           <Card
             css={css`
               margin-left: 0.5em;
             `}
           >
-            <p>card 2</p>
+            <p>card 1</p>
           </Card>
         </PlayerWrapper>
       </GameWrapper>

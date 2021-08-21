@@ -6,6 +6,6 @@ interface Props {
 }
 
 const AnimatedWrapper: React.FC<Props> = ({isOn, children}) => (
-  <AnimatePresence>{isOn ? children : null}</AnimatePresence>
+  <AnimatePresence>{isOn && children}</AnimatePresence>
 )
 export default AnimatedWrapper
