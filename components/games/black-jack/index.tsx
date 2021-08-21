@@ -3,9 +3,35 @@ import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {borderRadius, colors, elevations} from "@styles/styled-record"
 import {getRandomInt, getRandomItemInList, getTail, len} from "@utils/helpers"
+import {useMachine} from "@xstate/react"
 import cuid from "cuid"
 import {motion} from "framer-motion"
 import {Fragment, useEffect, useState} from "react"
+import {createMachine} from "xstate"
+
+const START = "START"
+interface Context {
+  playersHand: Array<CardType>
+  dealersHand: Array<CardType>
+  playerScore: number
+  dealerScore: number
+}
+type BlackJackEvents = {type: typeof START}
+
+const blackJackMachine = createMachine<Context, BlackJackEvents>({
+  id: "idle",
+  initial: "idle",
+  states: {
+    idle: {
+      on: {
+        [START]: {
+          target: "playing",
+        },
+      },
+    },
+    playing: {},
+  },
+})
 
 const GameWrapper = styled.section`
   ${flexColumn()};
@@ -20,6 +46,7 @@ const Card = styled(motion.div)`
   border-radius: ${borderRadius.borderRadiusM};
   box-shadow: ${elevations.shadowMd};
   background-color: ${colors.colorTextWhite};
+  color: ${colors.colorTextText};
 `
 
 const ScoreActionsContainer = styled.div`
@@ -62,9 +89,11 @@ const ActionsButtons = styled.div`
 const wrapperStyles = css`
   ${flexRow({justifyContent: "center"})};
   width: 100%;
-  position: relative;
-  border: 2px solid red;
   padding: 3rem 0;
+  position: relative;
+  min-height: 21rem;
+  background-color: ${colors.colorHighlight};
+  color: ${colors.colorBgBackground};
   h4 {
     position: absolute;
     top: 0;
@@ -88,8 +117,6 @@ const DealerWrapper = styled.div`
 
 const PlayerWrapper = styled.div`
   ${wrapperStyles};
-  position: relative;
-  min-height: 21rem;
 `
 
 interface CardType {
@@ -150,6 +177,7 @@ const calculatePoints = (hand: Array<CardType>): number => {
     const value = convertRank(getTail(handCopy).rank)
     res += value
   }
+
   return res
 }
 
@@ -186,39 +214,9 @@ const renderCard = (hand: Array<CardType>) =>
       </span>
     </Card>
   ))
-// const renderCard = (hand: Array<Card>) => {
-//   const lastCard = getTail(hand)
-//   return (
-//     <Card
-//       css={css`
-//         margin-left: 0.5em;
-//       `}
-//     >
-//       <span
-//         css={css`
-//           position: absolute;
-//           top: -0.5rem;
-//           left: 0.3rem;
-//           font-size: 1.5em;
-//         `}
-//       >
-//         {lastCard.suit}
-//       </span>
-//       <span
-//         css={css`
-//           position: absolute;
-//           bottom: 0;
-//           right: 0.5rem;
-//           font-size: 1.5em;
-//         `}
-//       >
-//         {lastCard.rank}
-//       </span>
-//     </Card>
-//   )
-// }
 
 const BlackJackGame = () => {
+  const [state, send] = useMachine(blackJackMachine)
   const [playersHand, setPlayersHand] = useState<Array<CardType>>([])
   const [dealersHand, setDealersHand] = useState<Array<CardType>>([])
   const [playersPoints, setPlayersPoints] = useState(0)
