@@ -2,7 +2,9 @@ import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {borderRadius, colors, elevations} from "@styles/styled-record"
-import {getRandomItemInList} from "@utils/helpers"
+import {getRandomInt, getRandomItemInList, getTail, len} from "@utils/helpers"
+import cuid from "cuid"
+import {motion} from "framer-motion"
 import {Fragment, useEffect, useState} from "react"
 
 const GameWrapper = styled.section`
@@ -10,12 +12,14 @@ const GameWrapper = styled.section`
   margin-bottom: 1rem; ;
 `
 
-const Card = styled.div`
+const Card = styled(motion.div)`
+  position: relative;
   min-height: 15rem;
   min-width: 15rem;
   border: 2px solid ${colors.colorTextText};
   border-radius: ${borderRadius.borderRadiusM};
   box-shadow: ${elevations.shadowMd};
+  background-color: ${colors.colorTextWhite};
 `
 
 const ScoreActionsContainer = styled.div`
@@ -56,7 +60,7 @@ const ActionsButtons = styled.div`
 `
 
 const wrapperStyles = css`
-  ${flexRow({justifyContent: "flex-start"})};
+  ${flexRow({justifyContent: "center"})};
   width: 100%;
   position: relative;
   border: 2px solid red;
@@ -84,13 +88,15 @@ const DealerWrapper = styled.div`
 
 const PlayerWrapper = styled.div`
   ${wrapperStyles};
+  position: relative;
+  min-height: 21rem;
 `
 
-interface Card {
+interface CardType {
   suit: string
   rank: string
 }
-const getCard = (): Card => {
+const getCard = (): CardType => {
   const suits = ["♠", "♣", "❤", "♦"]
   const ranks = [
     "A",
@@ -137,20 +143,84 @@ const convertRank = (rank: string) => {
   }
 }
 
-const calculatePoints = (hand: Array<Card>): number => {
+const calculatePoints = (hand: Array<CardType>): number => {
   let res = 0
   const handCopy = [...hand]
-
-  if (handCopy.length > 0) {
-    const value = convertRank(handCopy[handCopy.length - 1].rank)
+  if (len(handCopy) > 0) {
+    const value = convertRank(getTail(handCopy).rank)
     res += value
   }
   return res
 }
 
+const renderCard = (hand: Array<CardType>) =>
+  hand.map(({suit, rank}) => (
+    <Card
+      key={cuid()}
+      initial={{opacity: 0.5, scale: 0.65}}
+      animate={{rotate: getRandomInt(30), opacity: 1, scale: 1}}
+      css={css`
+        /* margin-left: 0.5em; */
+        position: absolute;
+      `}
+    >
+      <span
+        css={css`
+          position: absolute;
+          top: -0.5rem;
+          left: 0.3rem;
+          font-size: 1.5em;
+        `}
+      >
+        {suit}
+      </span>
+      <span
+        css={css`
+          position: absolute;
+          bottom: 0;
+          right: 0.5rem;
+          font-size: 1.5em;
+        `}
+      >
+        {rank}
+      </span>
+    </Card>
+  ))
+// const renderCard = (hand: Array<Card>) => {
+//   const lastCard = getTail(hand)
+//   return (
+//     <Card
+//       css={css`
+//         margin-left: 0.5em;
+//       `}
+//     >
+//       <span
+//         css={css`
+//           position: absolute;
+//           top: -0.5rem;
+//           left: 0.3rem;
+//           font-size: 1.5em;
+//         `}
+//       >
+//         {lastCard.suit}
+//       </span>
+//       <span
+//         css={css`
+//           position: absolute;
+//           bottom: 0;
+//           right: 0.5rem;
+//           font-size: 1.5em;
+//         `}
+//       >
+//         {lastCard.rank}
+//       </span>
+//     </Card>
+//   )
+// }
+
 const BlackJackGame = () => {
-  const [playersHand, setPlayersHand] = useState<Array<Card>>([])
-  const [dealersHand, setDealersHand] = useState<Array<Card>>([])
+  const [playersHand, setPlayersHand] = useState<Array<CardType>>([])
+  const [dealersHand, setDealersHand] = useState<Array<CardType>>([])
   const [playersPoints, setPlayersPoints] = useState(0)
   const [dealersPoints, setDealersPoints] = useState(0)
 
@@ -201,13 +271,7 @@ const BlackJackGame = () => {
         </ScoreActionsContainer>
         <PlayerWrapper>
           <h4>Player hand</h4>
-          <Card
-            css={css`
-              margin-left: 0.5em;
-            `}
-          >
-            <p>card 1</p>
-          </Card>
+          {playersHand.length > 0 && renderCard(playersHand)}
         </PlayerWrapper>
       </GameWrapper>
     </Fragment>

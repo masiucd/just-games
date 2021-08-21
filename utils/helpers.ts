@@ -15,6 +15,10 @@ export const getRandomItemInList = <T>(xs: Readonly<Array<T>>) => {
   return xs[index]
 }
 
+export const getRandomInt = (x = 10): number => Math.floor(Math.random() * x)
+export const getTail = <T>(xs: Array<T>) => xs[xs.length - 1]
+export const len = <T>(xs: Array<T>) => xs.length
+
 export const wordToList = (word: string) => [...word]
 
 export const alphabet = [
