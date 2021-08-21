@@ -1,3 +1,4 @@
+import AnimatedWrapper from "@components/common/animated-wrapper"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
@@ -33,9 +34,9 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>({
   },
 })
 
-const GameWrapper = styled.section`
+const GameWrapper = styled(motion.section)`
   ${flexColumn()};
-  margin-bottom: 1rem; ;
+  margin-bottom: 1rem;
 `
 
 const Card = styled(motion.div)`
@@ -47,6 +48,12 @@ const Card = styled(motion.div)`
   box-shadow: ${elevations.shadowMd};
   background-color: ${colors.colorTextWhite};
   color: ${colors.colorTextText};
+`
+
+const IdleActions = styled(motion.div)`
+  button {
+    ${resetButtonStyles};
+  }
 `
 
 const ScoreActionsContainer = styled.div`
@@ -226,52 +233,74 @@ const BlackJackGame = () => {
     setPlayersPoints((p) => calculatePoints(playersHand) + p)
   }, [playersHand])
 
-  console.log("playerHand", playersHand)
-  console.log("playersPoints", playersPoints)
+  const isIdle = state.matches("idle")
+  const isPlaying = state.matches("playing")
 
   return (
     <Fragment>
-      <GameWrapper>
-        <DealerWrapper>
-          <h4>Dealers hand</h4>
-          <Card>
-            <p>back</p>
-          </Card>
-          <Card
-            css={css`
-              margin-left: 0.5em;
-            `}
+      <AnimatedWrapper isOn={isIdle}>
+        <IdleActions
+          initial={{opacity: 0.65}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0.45}}
+        >
+          <button
+            onClick={() => {
+              send({type: "START"})
+            }}
           >
-            <p>card 1</p>
-          </Card>
-        </DealerWrapper>
-        <ScoreActionsContainer>
-          <ScoreWrapper>
-            <p>Dealer score: {dealersPoints}</p>
-            <p>Player score: {playersPoints}</p>
-          </ScoreWrapper>
-          <ActionsButtons>
-            <button>Deal</button>
-            <button
-              disabled={playersPoints > 21}
-              onClick={() => {
-                setPlayersHand((p) => [...p, getCard()])
-                setDealersHand((p) => [...p, getCard()])
+            Start
+          </button>
+        </IdleActions>
+      </AnimatedWrapper>
 
-                // setPlayersPoints((p) => calculatePoints(playersHand) + p)
-                // setDealersPoints(calculatePoints(dealersHand))
-              }}
+      <AnimatedWrapper isOn={isPlaying}>
+        <GameWrapper
+          initial={{opacity: 0.45}}
+          animate={{opacity: 1}}
+          exit={{opacity: 0.65}}
+        >
+          <DealerWrapper>
+            <h4>Dealers hand</h4>
+            <Card>
+              <p>back</p>
+            </Card>
+            <Card
+              css={css`
+                margin-left: 0.5em;
+              `}
             >
-              Hit
-            </button>
-            <button>Stand</button>
-          </ActionsButtons>
-        </ScoreActionsContainer>
-        <PlayerWrapper>
-          <h4>Player hand</h4>
-          {playersHand.length > 0 && renderCard(playersHand)}
-        </PlayerWrapper>
-      </GameWrapper>
+              <p>card 1</p>
+            </Card>
+          </DealerWrapper>
+          <ScoreActionsContainer>
+            <ScoreWrapper>
+              <p>Dealer score: {dealersPoints}</p>
+              <p>Player score: {playersPoints}</p>
+            </ScoreWrapper>
+            <ActionsButtons>
+              <button>Deal</button>
+              <button
+                disabled={playersPoints > 21}
+                onClick={() => {
+                  setPlayersHand((p) => [...p, getCard()])
+                  setDealersHand((p) => [...p, getCard()])
+
+                  // setPlayersPoints((p) => calculatePoints(playersHand) + p)
+                  // setDealersPoints(calculatePoints(dealersHand))
+                }}
+              >
+                Hit
+              </button>
+              <button>Stand</button>
+            </ActionsButtons>
+          </ScoreActionsContainer>
+          <PlayerWrapper>
+            <h4>Player hand</h4>
+            {playersHand.length > 0 && renderCard(playersHand)}
+          </PlayerWrapper>
+        </GameWrapper>
+      </AnimatedWrapper>
     </Fragment>
   )
 }
