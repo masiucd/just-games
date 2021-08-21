@@ -3,36 +3,178 @@ import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {borderRadius, colors, elevations} from "@styles/styled-record"
-import {getRandomInt, getRandomItemInList, getTail, len} from "@utils/helpers"
+import {getRandomInt, getRandomItemInList} from "@utils/helpers"
 import {useMachine} from "@xstate/react"
 import cuid from "cuid"
 import {motion} from "framer-motion"
-import {Fragment, useEffect, useState} from "react"
-import {createMachine} from "xstate"
+import {Fragment} from "react"
+import {assign, createMachine} from "xstate"
+
+const getCard = (): CardType => {
+  const suits = ["♠", "♣", "❤", "♦"]
+  const ranks = [
+    "A",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "J",
+    "Q",
+    "K",
+  ]
+
+  const suit = getRandomItemInList(suits)
+  const rank = getRandomItemInList(ranks)
+
+  return {suit, rank}
+}
+const convertRank = (rank: string) => {
+  switch (rank) {
+    case "2":
+    case "3":
+    case "4":
+    case "5":
+    case "6":
+    case "7":
+    case "8":
+    case "9":
+      return Number(rank)
+    case "10":
+    case "J":
+    case "Q":
+    case "K":
+      return 10
+    case "A":
+      return 11
+    default:
+      return 0
+  }
+}
+
+const calculateScore = (hand: Array<CardType>): number => {
+  let res = 0
+  const handCopy = [...hand]
+  for (const {rank} of handCopy) {
+    res += convertRank(rank)
+  }
+
+  return res
+}
 
 const START = "START"
+const HIT = "HIT"
+const SET_STAND = "SET_STAND"
+const NEW_GAME = "NEW_GAME"
 interface Context {
   playersHand: Array<CardType>
   dealersHand: Array<CardType>
   playerScore: number
   dealerScore: number
+  hitCount: number
 }
-type BlackJackEvents = {type: typeof START}
+type BlackJackEvents =
+  | {type: typeof START}
+  | {type: typeof HIT}
+  | {type: typeof SET_STAND}
+  | {type: typeof NEW_GAME}
 
-const blackJackMachine = createMachine<Context, BlackJackEvents>({
-  id: "idle",
-  initial: "idle",
-  states: {
-    idle: {
-      on: {
-        [START]: {
-          target: "playing",
+const blackJackMachine = createMachine<Context, BlackJackEvents>(
+  {
+    id: "idle",
+    initial: "idle",
+    context: {
+      playersHand: [],
+      dealersHand: [],
+      playerScore: 0,
+      dealerScore: 0,
+      hitCount: 0,
+    },
+    states: {
+      idle: {
+        entry: "resetContext",
+        on: {
+          [START]: {
+            target: "start",
+          },
+        },
+      },
+      start: {
+        id: "start",
+        initial: "playing",
+        states: {
+          playing: {
+            always: [{target: "gameOver", cond: "hasOverTwentyOne"}],
+            entry: [
+              "hit",
+              "calculatePlayerScore",
+              "setDealersHand",
+              "calculateDealersScore",
+            ],
+            on: {
+              [HIT]: {
+                actions: ["hit", "calculatePlayerScore"],
+              },
+              [SET_STAND]: {
+                target: "stand",
+              },
+            },
+          },
+          stand: {
+            entry: ["hitDealersHand", "calculateDealersScore"],
+          },
+          win: {},
+          gameOver: {
+            on: {
+              [NEW_GAME]: {
+                target: "#idle",
+              },
+            },
+          },
         },
       },
     },
-    playing: {},
   },
-})
+  {
+    guards: {
+      hasOverTwentyOne: ({playerScore}) => playerScore > 21,
+    },
+    actions: {
+      resetContext: assign({
+        playersHand: (_) => [],
+        dealersHand: (_) => [],
+        playerScore: (_) => 0,
+        dealerScore: (_) => 0,
+        hitCount: (_) => 0,
+      }),
+      hit: assign({
+        playersHand: ({playersHand}) => [...playersHand, getCard()],
+        hitCount: ({hitCount}) => hitCount + 1,
+      }),
+      setDealersHand: assign({
+        dealersHand: ({dealersHand}) => [...dealersHand, getCard(), getCard()],
+      }),
+      calculatePlayerScore: assign({
+        playerScore: ({playersHand}) => calculateScore(playersHand),
+      }),
+      calculateDealersScore: assign({
+        dealerScore: ({dealersHand}) => calculateScore(dealersHand),
+      }),
+      hitDealersHand: assign({
+        dealersHand: ({dealersHand, hitCount}) => {
+          const amountOfNewCard = getRandomInt(hitCount + 1)
+          const newCards = Array(amountOfNewCard).fill(getCard())
+
+          return [...dealersHand, ...newCards]
+        },
+      }),
+    },
+  },
+)
 
 const GameWrapper = styled(motion.section)`
   ${flexColumn()};
@@ -43,11 +185,11 @@ const Card = styled(motion.div)`
   position: relative;
   min-height: 15rem;
   min-width: 15rem;
-  border: 2px solid ${colors.colorTextText};
+  border: 2px solid ${colors.colorBgBlack};
   border-radius: ${borderRadius.borderRadiusM};
   box-shadow: ${elevations.shadowMd};
   background-color: ${colors.colorTextWhite};
-  color: ${colors.colorTextText};
+  color: ${colors.colorBgBlack};
 `
 
 const IdleActions = styled(motion.div)`
@@ -77,15 +219,11 @@ const ActionsButtons = styled.div`
       border-radius: 2px 2px 0 0;
     }
     &:nth-of-type(2) {
-      background-color: ${colors.colorHighlight};
+      background-color: ${colors.colorTextText};
       color: ${colors.colorBgBackground};
       border-radius: 0;
     }
-    &:nth-of-type(3) {
-      background-color: ${colors.colorTextText};
-      color: ${colors.colorBgBackground};
-      border-radius: 0 0 2px 2px;
-    }
+
     &:hover {
       background-color: ${colors.colorGray400};
       color: ${colors.colorHighlight};
@@ -98,7 +236,7 @@ const wrapperStyles = css`
   width: 100%;
   padding: 3rem 0;
   position: relative;
-  min-height: 21rem;
+  min-height: 23rem;
   background-color: ${colors.colorHighlight};
   color: ${colors.colorBgBackground};
   h4 {
@@ -130,114 +268,88 @@ interface CardType {
   suit: string
   rank: string
 }
-const getCard = (): CardType => {
-  const suits = ["♠", "♣", "❤", "♦"]
-  const ranks = [
-    "A",
-    "2",
-    "3",
-    "4",
-    "5",
-    "6",
-    "7",
-    "8",
-    "9",
-    "10",
-    "J",
-    "Q",
-    "K",
-  ]
 
-  const suit = getRandomItemInList(suits)
-  const rank = getRandomItemInList(ranks)
+const CardElement = styled.span`
+  position: absolute;
+  font-size: 1.5em;
+`
 
-  return {suit, rank}
-}
-
-const convertRank = (rank: string) => {
-  switch (rank) {
-    case "2":
-    case "3":
-    case "4":
-    case "5":
-    case "6":
-    case "7":
-    case "8":
-    case "9":
-      return Number(rank)
-    case "10":
-    case "J":
-    case "Q":
-    case "K":
-      return 10
-    case "A":
-      return 11
-    default:
-      return 0
-  }
-}
-
-const calculatePoints = (hand: Array<CardType>): number => {
-  let res = 0
-  const handCopy = [...hand]
-  if (len(handCopy) > 0) {
-    const value = convertRank(getTail(handCopy).rank)
-    res += value
-  }
-
-  return res
-}
-
-const renderCard = (hand: Array<CardType>) =>
+const renderCard = (hand: Array<CardType>, rotate = true) =>
   hand.map(({suit, rank}) => (
     <Card
       key={cuid()}
       initial={{opacity: 0.5, scale: 0.65}}
-      animate={{rotate: getRandomInt(30), opacity: 1, scale: 1}}
+      animate={{rotate: rotate ? getRandomInt(20) : 0, opacity: 1, scale: 1}}
       css={css`
-        /* margin-left: 0.5em; */
         position: absolute;
       `}
     >
-      <span
+      <CardElement
         css={css`
-          position: absolute;
-          top: -0.5rem;
+          top: -0.2rem;
           left: 0.3rem;
-          font-size: 1.5em;
         `}
       >
         {suit}
-      </span>
-      <span
+      </CardElement>
+      <CardElement
         css={css`
-          position: absolute;
           bottom: 0;
           right: 0.5rem;
-          font-size: 1.5em;
         `}
       >
         {rank}
-      </span>
+      </CardElement>
     </Card>
   ))
 
 const BlackJackGame = () => {
   const [state, send] = useMachine(blackJackMachine)
-  const [playersHand, setPlayersHand] = useState<Array<CardType>>([])
-  const [dealersHand, setDealersHand] = useState<Array<CardType>>([])
-  const [playersPoints, setPlayersPoints] = useState(0)
-  const [dealersPoints, setDealersPoints] = useState(0)
-
-  useEffect(() => {
-    setPlayersPoints((p) => calculatePoints(playersHand) + p)
-  }, [playersHand])
+  const {dealerScore, dealersHand, playersHand, playerScore} = state.context
 
   const isIdle = state.matches("idle")
-  const isPlaying = state.matches("playing")
-
+  const isPlaying = state.matches("start.playing")
+  const isGameOver = state.matches("start.gameOver")
+  const hasStand = state.matches("start.stand")
+  console.log(state.value)
+  // console.log(state.context)
+  console.log({playersHand, playerScore, dealersHand})
   return (
     <Fragment>
+      <AnimatedWrapper isOn={isGameOver}>
+        <motion.div
+          initial={{opacity: 0.3, x: -1000}}
+          animate={{opacity: 1, x: 0}}
+          exit={{opacity: 0.65, x: 1000}}
+          css={css`
+            position: absolute;
+            top: 50%;
+            z-index: 10;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: ${colors.colorBgOverlay2};
+            color: ${colors.colorBgBackground};
+            min-width: 12em;
+            padding: 0.5em;
+            border-radius: ${borderRadius.borderRadiusM};
+            ${flexColumn()};
+            button {
+              ${resetButtonStyles};
+              font-size: 1em;
+            }
+          `}
+        >
+          <h4>Game over 😢</h4>
+          <button
+            type="button"
+            onClick={() => {
+              send({type: "NEW_GAME"})
+            }}
+          >
+            New game
+          </button>
+        </motion.div>
+      </AnimatedWrapper>
       <AnimatedWrapper isOn={isIdle}>
         <IdleActions
           initial={{opacity: 0.65}}
@@ -254,7 +366,7 @@ const BlackJackGame = () => {
         </IdleActions>
       </AnimatedWrapper>
 
-      <AnimatedWrapper isOn={isPlaying}>
+      <AnimatedWrapper isOn={!isIdle}>
         <GameWrapper
           initial={{opacity: 0.45}}
           animate={{opacity: 1}}
@@ -262,37 +374,33 @@ const BlackJackGame = () => {
         >
           <DealerWrapper>
             <h4>Dealers hand</h4>
-            <Card>
-              <p>back</p>
-            </Card>
-            <Card
-              css={css`
-                margin-left: 0.5em;
-              `}
-            >
-              <p>card 1</p>
-            </Card>
+            {renderCard(dealersHand, false)}
           </DealerWrapper>
           <ScoreActionsContainer>
             <ScoreWrapper>
-              <p>Dealer score: {dealersPoints}</p>
-              <p>Player score: {playersPoints}</p>
+              {/* TODO: hide dealers score when playing */}
+              <p>Dealer score: {dealerScore}</p>
+              <p>Player score: {playerScore}</p>
             </ScoreWrapper>
             <ActionsButtons>
-              <button>Deal</button>
               <button
-                disabled={playersPoints > 21}
+                type="button"
+                disabled={isGameOver || hasStand}
                 onClick={() => {
-                  setPlayersHand((p) => [...p, getCard()])
-                  setDealersHand((p) => [...p, getCard()])
-
-                  // setPlayersPoints((p) => calculatePoints(playersHand) + p)
-                  // setDealersPoints(calculatePoints(dealersHand))
+                  send({type: "HIT"})
                 }}
               >
                 Hit
               </button>
-              <button>Stand</button>
+              <button
+                type="button"
+                disabled={isGameOver || hasStand}
+                onClick={() => {
+                  send({type: "SET_STAND"})
+                }}
+              >
+                Stand
+              </button>
             </ActionsButtons>
           </ScoreActionsContainer>
           <PlayerWrapper>
