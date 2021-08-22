@@ -1,13 +1,14 @@
 import AnimatedWrapper from "@components/common/animated-wrapper"
+import Dialog from "@components/common/dialog"
 import {css} from "@emotion/react"
 import styled from "@emotion/styled"
 import {flexColumn, flexRow, resetButtonStyles} from "@styles/common"
 import {borderRadius, colors, elevations} from "@styles/styled-record"
-import {getRandomInt, getRandomItemInList} from "@utils/helpers"
+import {getRandomInt, getRandomItemInList, getTail} from "@utils/helpers"
 import {useMachine} from "@xstate/react"
 import cuid from "cuid"
 import {motion} from "framer-motion"
-import {Fragment} from "react"
+import React, {Fragment} from "react"
 import {assign, createMachine} from "xstate"
 
 const getCard = (): CardType => {
@@ -70,18 +71,21 @@ const START = "START"
 const HIT = "HIT"
 const SET_STAND = "SET_STAND"
 const NEW_GAME = "NEW_GAME"
+const CHANGE_A_CARD_VALUE = "CHANGE_A_CARD_VALUE"
 interface Context {
   playersHand: Array<CardType>
   dealersHand: Array<CardType>
   playerScore: number
   dealerScore: number
   hitCount: number
+  canChangeCardValue: boolean
 }
 type BlackJackEvents =
   | {type: typeof START}
   | {type: typeof HIT}
   | {type: typeof SET_STAND}
   | {type: typeof NEW_GAME}
+  | {type: typeof CHANGE_A_CARD_VALUE}
 
 const blackJackMachine = createMachine<Context, BlackJackEvents>(
   {
@@ -93,6 +97,7 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
       playerScore: 0,
       dealerScore: 0,
       hitCount: 0,
+      canChangeCardValue: false,
     },
     states: {
       idle: {
@@ -114,13 +119,17 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
               "calculatePlayerScore",
               "setDealersHand",
               "calculateDealersScore",
+              "checkIfA",
             ],
             on: {
               [HIT]: {
-                actions: ["hit", "calculatePlayerScore"],
+                actions: ["hit", "calculatePlayerScore", "checkIfA"],
               },
               [SET_STAND]: {
                 target: "stand",
+              },
+              [CHANGE_A_CARD_VALUE]: {
+                actions: "changeACardValue",
               },
             },
           },
@@ -150,11 +159,20 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
         playerScore: (_) => 0,
         dealerScore: (_) => 0,
         hitCount: (_) => 0,
+        canChangeCardValue: (_) => false,
       }),
       hit: assign({
         playersHand: ({playersHand}) => [...playersHand, getCard()],
         hitCount: ({hitCount}) => hitCount + 1,
       }),
+
+      checkIfA: assign({
+        canChangeCardValue: ({playersHand}) => {
+          const tail = getTail(playersHand)
+          return tail.rank === "A"
+        },
+      }),
+
       setDealersHand: assign({
         dealersHand: ({dealersHand}) => [...dealersHand, getCard(), getCard()],
       }),
@@ -164,11 +182,18 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
       calculateDealersScore: assign({
         dealerScore: ({dealersHand}) => calculateScore(dealersHand),
       }),
+      // TODO: use unique id for each card
+      // TODO: If we have two A cards here both will be changed
+      changeACardValue: assign({
+        playersHand: ({playersHand}) =>
+          playersHand.map((card) =>
+            card.rank === "A" ? {...card, rank: "1"} : card,
+          ),
+      }),
       hitDealersHand: assign({
         dealersHand: ({dealersHand, hitCount}) => {
           const amountOfNewCard = getRandomInt(hitCount + 1)
           const newCards = Array(amountOfNewCard).fill(getCard())
-
           return [...dealersHand, ...newCards]
         },
       }),
@@ -305,17 +330,30 @@ const renderCard = (hand: Array<CardType>, rotate = true) =>
 
 const BlackJackGame = () => {
   const [state, send] = useMachine(blackJackMachine)
-  const {dealerScore, dealersHand, playersHand, playerScore} = state.context
+  const {
+    dealerScore,
+    dealersHand,
+    playersHand,
+    playerScore,
+    canChangeCardValue,
+  } = state.context
 
   const isIdle = state.matches("idle")
-  const isPlaying = state.matches("start.playing")
+  // const isPlaying = state.matches("start.playing")
   const isGameOver = state.matches("start.gameOver")
   const hasStand = state.matches("start.stand")
   console.log(state.value)
   // console.log(state.context)
-  console.log({playersHand, playerScore, dealersHand})
+  console.log({playersHand, playerScore, dealersHand, canChangeCardValue})
   return (
     <Fragment>
+      <Dialog isOpen={canChangeCardValue && !isGameOver}>
+        <p>
+          You got an <span>A</span> you can keep the value 11 or change it to 1{" "}
+        </p>
+        <p>your choice</p>
+      </Dialog>
+
       <AnimatedWrapper isOn={isGameOver}>
         <motion.div
           initial={{opacity: 0.3, x: -1000}}
@@ -405,7 +443,7 @@ const BlackJackGame = () => {
           </ScoreActionsContainer>
           <PlayerWrapper>
             <h4>Player hand</h4>
-            {playersHand.length > 0 && renderCard(playersHand)}
+            {renderCard(playersHand)}
           </PlayerWrapper>
         </GameWrapper>
       </AnimatedWrapper>
