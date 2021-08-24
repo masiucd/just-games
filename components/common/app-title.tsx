@@ -32,19 +32,17 @@ const appTitleStyles = css`
     margin: 0 0.1rem;
   }
 `
-const AppTitle = ({incomingStyles}: Props) => {
-  return (
-    <aside
-      css={css`
-        ${appTitleStyles};
-        ${incomingStyles};
-      `}
-    >
-      <Link href="/">
-        <strong>{toSpans("Just Games")}</strong>
-      </Link>
-    </aside>
-  )
-}
+const AppTitle = ({incomingStyles}: Props) => (
+  <aside
+    css={css`
+      ${appTitleStyles};
+      ${incomingStyles};
+    `}
+  >
+    <Link href="/">
+      <strong>{toSpans("Just Games")}</strong>
+    </Link>
+  </aside>
+)
 
 export default AppTitle
