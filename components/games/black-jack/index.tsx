@@ -72,6 +72,7 @@ const HIT = "HIT"
 const SET_STAND = "SET_STAND"
 const NEW_GAME = "NEW_GAME"
 const CHANGE_A_CARD_VALUE = "CHANGE_A_CARD_VALUE"
+const CLOSE_CHANGE_CARD_VALUE_DIALOG = "CLOSE_CHANGE_CARD_VALUE_DIALOG"
 interface Context {
   playersHand: Array<CardType>
   dealersHand: Array<CardType>
@@ -79,6 +80,7 @@ interface Context {
   dealerScore: number
   hitCount: number
   canChangeCardValue: boolean
+  wantToChangeCardValue: boolean
 }
 type BlackJackEvents =
   | {type: typeof START}
@@ -86,6 +88,7 @@ type BlackJackEvents =
   | {type: typeof SET_STAND}
   | {type: typeof NEW_GAME}
   | {type: typeof CHANGE_A_CARD_VALUE}
+  | {type: typeof CLOSE_CHANGE_CARD_VALUE_DIALOG}
 
 const blackJackMachine = createMachine<Context, BlackJackEvents>(
   {
@@ -98,6 +101,7 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
       dealerScore: 0,
       hitCount: 0,
       canChangeCardValue: false,
+      wantToChangeCardValue: false,
     },
     states: {
       idle: {
@@ -127,6 +131,11 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
               },
               [SET_STAND]: {
                 target: "stand",
+              },
+              [CLOSE_CHANGE_CARD_VALUE_DIALOG]: {
+                actions: assign({
+                  canChangeCardValue: (_) => false,
+                }),
               },
               [CHANGE_A_CARD_VALUE]: {
                 actions: "changeACardValue",
@@ -160,6 +169,7 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
         dealerScore: (_) => 0,
         hitCount: (_) => 0,
         canChangeCardValue: (_) => false,
+        wantToChangeCardValue: (_) => false,
       }),
       hit: assign({
         playersHand: ({playersHand}) => [...playersHand, getCard()],
@@ -182,13 +192,10 @@ const blackJackMachine = createMachine<Context, BlackJackEvents>(
       calculateDealersScore: assign({
         dealerScore: ({dealersHand}) => calculateScore(dealersHand),
       }),
-      // TODO: use unique id for each card
-      // TODO: If we have two A cards here both will be changed
+
       changeACardValue: assign({
-        playersHand: ({playersHand}) =>
-          playersHand.map((card) =>
-            card.rank === "A" ? {...card, rank: "1"} : card,
-          ),
+        playerScore: ({playerScore}) => playerScore - 10,
+        canChangeCardValue: (_) => false,
       }),
       hitDealersHand: assign({
         dealersHand: ({dealersHand, hitCount}) => {
@@ -347,24 +354,77 @@ const BlackJackGame = () => {
   console.log({playersHand, playerScore, dealersHand, canChangeCardValue})
   return (
     <Fragment>
-      <Dialog isOpen={canChangeCardValue && !isGameOver}>
-        <p>
-          You got an <span>A</span> you can keep the value 11 or change it to 1{" "}
-        </p>
-        <p>your choice</p>
+      <Dialog
+        isOpen={canChangeCardValue && !isGameOver}
+        incomingStyles={css`
+          ${flexRow()};
+        `}
+      >
+        <section
+          css={css`
+            background-color: ${colors.colorBgBackground};
+            padding: 1rem;
+            ${flexColumn()};
+            span {
+              color: ${colors.colorTextPrimary};
+              font-weight: bold;
+            }
+
+            button {
+              ${resetButtonStyles};
+              background-color: ${colors.colorHighlight};
+              color: ${colors.colorBgBackground};
+            }
+          `}
+        >
+          <p>
+            You got an <span>A</span> you can keep the value 11 or change it to
+            1{" "}
+          </p>
+          <p>it us your choice.</p>
+          <div
+            className="buttons"
+            css={css`
+              padding: 0.65rem 0;
+              width: 100%;
+              ${flexRow({justifyContent: "space-evenly"})};
+              span {
+                color: ${colors.colorGray400};
+              }
+            `}
+          >
+            <button
+              onClick={() => {
+                send({type: CHANGE_A_CARD_VALUE})
+              }}
+            >
+              Change to <span>1</span>
+            </button>
+            <button
+              onClick={() => {
+                send({type: CLOSE_CHANGE_CARD_VALUE_DIALOG})
+              }}
+            >
+              Keep value <span>11</span>
+            </button>
+          </div>
+        </section>
       </Dialog>
 
       <AnimatedWrapper isOn={isGameOver}>
         <motion.div
           initial={{opacity: 0.3, x: -1000}}
-          animate={{opacity: 1, x: 0}}
-          exit={{opacity: 0.65, x: 1000}}
+          animate={{opacity: 1, x: "-50%", y: "-30%"}}
+          exit={{opacity: 0.15, x: 10000}}
           css={css`
             position: absolute;
             top: 50%;
             z-index: 10;
             left: 50%;
-            transform: translate(-50%, -50%);
+            /* transform: translate(-50%, -50%);
+
+            transform: translate(-50%, 0); */
+
             background-color: ${colors.colorBgOverlay2};
             color: ${colors.colorBgBackground};
             min-width: 12em;
@@ -396,7 +456,7 @@ const BlackJackGame = () => {
         >
           <button
             onClick={() => {
-              send({type: "START"})
+              send({type: START})
             }}
           >
             Start
@@ -425,7 +485,7 @@ const BlackJackGame = () => {
                 type="button"
                 disabled={isGameOver || hasStand}
                 onClick={() => {
-                  send({type: "HIT"})
+                  send({type: HIT})
                 }}
               >
                 Hit
@@ -434,7 +494,7 @@ const BlackJackGame = () => {
                 type="button"
                 disabled={isGameOver || hasStand}
                 onClick={() => {
-                  send({type: "SET_STAND"})
+                  send({type: SET_STAND})
                 }}
               >
                 Stand
